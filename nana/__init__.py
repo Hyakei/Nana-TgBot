@@ -102,8 +102,8 @@ BASE = declarative_base()
 SESSION = mulaisql()
 
 if SETTINGS_BOT:
-	setbot = Client("ManageBot", api_id=api_id, api_hash=api_hash, bot_token=SETTINGS_BOT_TOKEN, workers=8)
+	setbot = Client("nana/session/ManageBot", api_id=api_id, api_hash=api_hash, bot_token=SETTINGS_BOT_TOKEN, workers=8)
 else:
 	setbot = None
 
-app = Client("nana", api_id=api_id, api_hash=api_hash, app_version=app_version, device_model=device_model, system_version=system_version, lang_code=lang_code, workers=8)
+app = Client("nana/session/Nana", api_id=api_id, api_hash=api_hash, app_version=app_version, device_model=device_model, system_version=system_version, lang_code=lang_code, workers=8)

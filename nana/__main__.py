@@ -9,25 +9,23 @@ from nana.modules import ALL_MODULES
 from nana.settings import ALL_SETTINGS
 from nana import Load, NoLoad
 
-app.start()
-if SETTINGS_BOT:
+
+def start_userbot():
+	app.start()
+	for modul in ALL_MODULES:
+		imported_module = importlib.import_module("nana.modules." + modul)
+
+def start_settings():
 	setbot.start()
-
-
+	for setting in ALL_SETTINGS:
+		imported_module = importlib.import_module("nana.settings." + setting)
 
 if __name__ == '__main__':
 	# Nana
-	Bantuan = []
-	for modul in ALL_MODULES:
-		imported_module = importlib.import_module("nana.modules." + modul)
-		if hasattr(imported_module, "HelpCMD") and imported_module.HelpCMD:
-			Bantuan.append({"file": modul, "judul": imported_module.NamaModul, "bantuan": imported_module.HelpCMD})
-	for module_name in ALL_MODULES:
-		imported_module = importlib.import_module("nana.modules." + module_name)
+	start_userbot()
 	# Settings bot
 	if SETTINGS_BOT:
-		for setting in ALL_SETTINGS:
-			imported_module = importlib.import_module("nana.settings." + setting)
+		start_settings()
 	log.info("-----------------------")
 	log.info("Modul telah dijalankan: " + str(ALL_MODULES))
 	log.info("-----------------------")

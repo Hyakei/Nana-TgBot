@@ -105,5 +105,5 @@ venv.bak/
 
 # your private data
 nana/config.py
-*.session
-*.session-journal
+nana/session/*
+!nana/session/README.md
