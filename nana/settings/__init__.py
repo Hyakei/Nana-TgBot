@@ -1,6 +1,6 @@
 import importlib
 
-from nana import Load, NoLoad, log
+from nana import SETTINGSBOT_LOAD, SETTINGSBOT_NOLOAD, log
 
 def __list_all_modules():
     from os.path import dirname, basename, isfile
@@ -11,19 +11,19 @@ def __list_all_modules():
                    and f.endswith(".py")
                    and not f.endswith('__init__.py')]
 
-    if Load or NoLoad:
-        to_Load = Load
+    if SETTINGSBOT_LOAD or SETTINGSBOT_NOLOAD:
+        to_Load = SETTINGSBOT_LOAD
         if to_Load:
             if not all(any(mod == module_name for module_name in all_modules) for mod in to_Load):
-                log.error("Nama Muatan Pesan Tidak Valid. Berhenti.")
+                log.error("Invalid Module name for settings bot!")
                 quit(1)
 
         else:
             to_Load = all_modules
 
-        if NoLoad:
-            log.info("Tidak Memuat: {}".format(NoLoad))
-            return [item for item in to_Load if item not in NoLoad]
+        if SETTINGSBOT_NOLOAD:
+            log.info("Not loaded: {}".format(SETTINGSBOT_NOLOAD))
+            return [item for item in to_Load if item not in SETTINGSBOT_NOLOAD]
 
         return to_Load
 
@@ -31,5 +31,5 @@ def __list_all_modules():
 
 
 ALL_SETTINGS = sorted(__list_all_modules())
-log.info("Modul yang dijalankan: %s", str(ALL_SETTINGS))
+log.info("Settings bot module loaded: %s", str(ALL_SETTINGS))
 __all__ = ALL_SETTINGS + ["ALL_SETTINGS"]

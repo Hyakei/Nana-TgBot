@@ -24,24 +24,30 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
 
 from nana.config import Development as Config
 
-# Versi
+USERBOT_VERSION = "0.1"
+SETTINGSBOT_VERSION = "0.1"
+
+# Version
 lang_code = Config.lang_code
 device_model = Config.device_model
-app_version = Config.app_version
+app_version = "💝 Nana v{}".format(USERBOT_VERSION)
 system_version = Config.system_version
 
-USERBOT_VERSION = "v0.1"
-SETTINGSBOT_VERSION = "v0.1"
-
-# Dibutuhkan
+# Must be filled
 api_id = Config.api_id
 api_hash = Config.api_hash
+
+# Required for some features
 Owner = Config.Owner
-Load = Config.Load
-NoLoad = Config.NoLoad
 Command = Config.Command
 OutputDownload = Config.OutputDownload
 log = logging.getLogger()
+
+# LOADER
+USERBOT_LOAD = Config.USERBOT_LOAD
+USERBOT_NOLOAD = Config.USERBOT_NOLOAD
+SETTINGSBOT_LOAD = Config.SETTINGSBOT_LOAD
+SETTINGSBOT_NOLOAD = Config.SETTINGSBOT_NOLOAD
 
 DB_URL = Config.DB_URL
 SETTINGS_BOT = Config.SETTINGS_BOT
@@ -62,40 +68,6 @@ def mulaisql() -> scoped_session:
 		return False
 	DB_AVAIABLE = True
 	return scoped_session(sessionmaker(bind=engine, autoflush=False))
-
-def deldog(data):
-	BASE_URL = 'https://del.dog'
-	r = requests.post(f'{BASE_URL}/documents', data=data.encode('utf-8'))
-	if r.status_code == 404:
-		update.effective_message.reply_text('Failed to reach dogbin')
-		r.raise_for_status()
-	res = r.json()
-	if r.status_code != 200:
-		update.effective_message.reply_text(res['message'])
-		r.raise_for_status()
-	key = res['key']
-	if res['isUrl']:
-		reply = f'Shortened URL: {BASE_URL}/{key}\nYou can view stats, etc. [here]({BASE_URL}/v/{key})'
-	else:
-		reply = f'{BASE_URL}/{key}'
-	return reply
-
-def cleanhtml(raw_html):
-	cleanr = re.compile('<.*?>')
-	cleantext = re.sub(cleanr, '', raw_html)
-	return cleantext
-
-def escape_markdown(text):
-	"""Helper function to escape telegram markup symbols."""
-	escape_chars = '\*_`\['
-	return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
-
-def mention_html(user_id, name):
-	return u'<a href="tg://user?id={}">{}</a>'.format(user_id, html.escape(name))
-
-def mention_markdown(user_id, name):
-	return u'[{}](tg://user?id={})'.format(escape_markdown(name), user_id)
-
 
 
 BASE = declarative_base()

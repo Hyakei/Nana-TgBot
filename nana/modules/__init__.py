@@ -1,6 +1,6 @@
 import importlib
 
-from nana import Load, NoLoad, log
+from nana import USERBOT_LOAD, USERBOT_NOLOAD, log
 
 def __list_all_modules():
     from os.path import dirname, basename, isfile
@@ -11,19 +11,19 @@ def __list_all_modules():
                    and f.endswith(".py")
                    and not f.endswith('__init__.py')]
 
-    if Load or NoLoad:
-        to_Load = Load
+    if USERBOT_LOAD or USERBOT_NOLOAD:
+        to_Load = USERBOT_LOAD
         if to_Load:
             if not all(any(mod == module_name for module_name in all_modules) for mod in to_Load):
-                log.error("Nama Muatan Pesan Tidak Valid. Berhenti.")
+                log.error("Invalid Module name for userbot!")
                 quit(1)
 
         else:
             to_Load = all_modules
 
-        if NoLoad:
-            log.info("Tidak Memuat: {}".format(NoLoad))
-            return [item for item in to_Load if item not in NoLoad]
+        if USERBOT_NOLOAD:
+            log.info("Userbot No load: {}".format(USERBOT_NOLOAD))
+            return [item for item in to_Load if item not in USERBOT_NOLOAD]
 
         return to_Load
 
@@ -31,5 +31,5 @@ def __list_all_modules():
 
 
 ALL_MODULES = sorted(__list_all_modules())
-log.info("Modul yang dijalankan: %s", str(ALL_MODULES))
+log.info("Userbot module loaded: %s", str(ALL_MODULES))
 __all__ = ALL_MODULES + ["ALL_MODULES"]

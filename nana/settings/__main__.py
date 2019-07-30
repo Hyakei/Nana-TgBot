@@ -3,6 +3,7 @@ import os, requests
 from bs4 import BeautifulSoup
 
 from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, SETTINGSBOT_VERSION
+from __main__ import reload_userbot
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton, errors
 
 from threading import Thread
@@ -17,10 +18,10 @@ def start(client, message):
 	text = "Hello {}!\n".format(message.from_user.first_name)
 	text += "**Here is your current stats:**\n"
 	if not me:
-		text += "-> Userbot: `Stopped ({})`\n".format(USERBOT_VERSION)
+		text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
 	else:
-		text += "-> Userbot: `Running ({})`\n".format(USERBOT_VERSION)
-	text += "-> Bot Settings: `Running ({})`\n".format(SETTINGSBOT_VERSION)
+		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
+	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	if not me:
 		text += "\nBot is currently turned off, to start bot again, type /settings and click **Start Bot** button"
@@ -48,8 +49,8 @@ def get_myself(client, message):
 	if me.username:
 		text += "Username: @{}\n".format(me.username)
 	text += "Phone number: `{}`\n".format(me.phone_number)
-	text += "Nana Version: {}\n".format(USERBOT_VERSION)
-	text += "Manager Version: {}".format(SETTINGSBOT_VERSION)
+	text += "`Nana Version    : v{}`\n".format(USERBOT_VERSION)
+	text += "`Manager Version : v{}`".format(SETTINGSBOT_VERSION)
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]])
 	if me.photo:
 		client.send_photo(message.chat.id, photo=getpp, caption=text, reply_markup=button)
@@ -65,10 +66,10 @@ def settings(client, message):
 		me = None
 	text = "**⚙️ Welcome to Nana Settings!**\n"
 	if not me:
-		text += "-> Userbot: `Stopped ({})`\n".format(USERBOT_VERSION)
+		text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
 	else:
-		text += "-> Userbot: `Running ({})`\n".format(USERBOT_VERSION)
-	text += "-> Bot Settings: `Running ({})`\n".format(SETTINGSBOT_VERSION)
+		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
+	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	text += "\nJust setup what you need here"
 	if not me:
@@ -117,6 +118,9 @@ def get_myself_btn(client, query):
 		text += "Phone number: `{}`\n".format(me.phone_number)
 		button = InlineKeyboardMarkup([[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]])
 
+	text += "`Nana Version    : v{}`\n".format(USERBOT_VERSION)
+	text += "`Manager Version : v{}`".format(SETTINGSBOT_VERSION)
+
 	if query.message.caption:
 		query.message.edit_caption(caption=text, reply_markup=button)
 	else:
@@ -127,10 +131,10 @@ def start_stop_bot(client, query):
 	try:
 		me = app.get_me()
 	except ConnectionError:
-		app.start()
+		reload_userbot()
 		text = "**⚙️ Welcome to Nana Settings!**\n"
-		text += "-> Userbot: `Running ({})`\n".format(USERBOT_VERSION)
-		text += "-> Bot Settings: `Running ({})`\n".format(SETTINGSBOT_VERSION)
+		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
+		text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 		text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 		text += "\n✅ Bot was started!"
 		button = InlineKeyboardMarkup([[InlineKeyboardButton("Stop Bot", callback_data="toggle_startbot")]])
@@ -142,10 +146,13 @@ def start_stop_bot(client, query):
 		return
 	app.stop()
 	text = "**⚙️ Welcome to Nana Settings!**\n"
-	text += "-> Userbot: `Stopped ({})`\n".format(USERBOT_VERSION)
-	text += "-> Bot Settings: `Running ({})`\n".format(SETTINGSBOT_VERSION)
+	text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
+	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	text += "\n❎ Bot was stopped!"
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("Start Bot", callback_data="toggle_startbot")]])
-	query.message.edit_text(text, reply_markup=button)
+	try:
+		query.message.edit_text(text, reply_markup=button)
+	except errors.exceptions.bad_request_400.MessageNotModified:
+		pass
 	client.answer_callback_query(query.id, "Bot was stopped!")

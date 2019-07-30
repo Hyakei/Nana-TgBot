@@ -7,26 +7,28 @@ from nana import app, Owner, log, Command, SETTINGS_BOT, setbot
 
 from nana.modules import ALL_MODULES
 from nana.settings import ALL_SETTINGS
-from nana import Load, NoLoad
 
 
-def start_userbot():
+def reload_userbot():
 	app.start()
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
+		importlib.reload(imported_module)
 
-def start_settings():
-	setbot.start()
-	for setting in ALL_SETTINGS:
-		imported_module = importlib.import_module("nana.settings." + setting)
 
 if __name__ == '__main__':
 	# Nana
-	start_userbot()
+	app.start()
+	for modul in ALL_MODULES:
+		imported_module = importlib.import_module("nana.modules." + modul)
 	# Settings bot
 	if SETTINGS_BOT:
-		start_settings()
+		setbot.start()
+		for setting in ALL_SETTINGS:
+			imported_module = importlib.import_module("nana.settings." + setting)
 	log.info("-----------------------")
-	log.info("Modul telah dijalankan: " + str(ALL_MODULES))
+	log.info("Userbot modules: " + str(ALL_MODULES))
+	log.info("-----------------------")
+	log.info("Settings bot modules: " + str(ALL_SETTINGS))
 	log.info("-----------------------")
 	log.info("Sukses menjalankan bot!")
