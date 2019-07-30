@@ -30,6 +30,9 @@ device_model = Config.device_model
 app_version = Config.app_version
 system_version = Config.system_version
 
+USERBOT_VERSION = "v0.1"
+SETTINGSBOT_VERSION = "v0.1"
+
 # Dibutuhkan
 api_id = Config.api_id
 api_hash = Config.api_hash
@@ -43,6 +46,7 @@ log = logging.getLogger()
 DB_URL = Config.DB_URL
 SETTINGS_BOT = Config.SETTINGS_BOT
 SETTINGS_BOT_TOKEN = Config.SETTINGS_BOT_TOKEN
+AdminSettings = Config.AdminSettings
 
 DB_AVAIABLE = False
 
