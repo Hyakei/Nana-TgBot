@@ -10,6 +10,7 @@ import traceback
 
 from nana import app, Command, logging
 from nana.helpers.deldog import deldog
+from nana.helpers.parser import mention_markdown
 from pyrogram import Filters
 
 __MODULE__ = "Devs"
@@ -31,6 +32,10 @@ Execute command shell
 ──「 **Take log** 」──
 -> `log`
 Edit log message, or deldog instead
+
+──「 **Get Data Center** 」──
+-> `dc`
+Get user specific data center
 """
 
 
@@ -162,3 +167,31 @@ def log(client, message):
 	except:
 		data = reporting(str(message))
 		message.edit(data)
+
+@app.on_message(Filters.user("self") & Filters.command(["dc"], Command))
+def dc_id(client, message):
+	chat = message.chat
+	user = message.from_user
+	if message.reply_to_message:
+		if message.reply_to_message.forward_from:
+			dc_id = client.get_user_dc(message.reply_to_message.forward_from.id)
+			user = mention_markdown(message.reply_to_message.forward_from.id, message.reply_to_message.forward_from.first_name)
+		else:
+			dc_id = client.get_user_dc(message.reply_to_message.from_user.id)
+			user = mention_markdown(message.reply_to_message.from_user.id, message.reply_to_message.from_user.first_name)
+	else:
+		dc_id = client.get_user_dc(message.from_user.id)
+		user = mention_markdown(message.from_user.id, message.from_user.first_name)
+	if dc_id == 1:
+		text = "{}'s assigned datacenter is **DC1**, located in **MIA, Miami FL, USA**".format(user)
+	elif dc_id == 2:
+		text = "{}'s assigned datacenter is **DC2**, located in **AMS, Amsterdam, NL**".format(user)
+	elif dc_id == 3:
+		text = "{}'s assigned datacenter is **DC3**, located in **MIA, Miami FL, USA**".format(user)
+	elif dc_id == 4:
+		text = "{}'s assigned datacenter is **DC4**, located in **AMS, Amsterdam, NL**".format(user)
+	elif dc_id == 5:
+		text = "{}'s assigned datacenter is **DC5**, located in **SIN, Singapore, SG**".format(user)
+	else:
+		text = "{}'s assigned datacenter is **Unknown**".format(user)
+	message.edit(text)

@@ -1,6 +1,7 @@
 import os, requests
 
 from bs4 import BeautifulSoup
+from platform import python_version, uname
 
 from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, SETTINGSBOT_VERSION
 from __main__ import reload_userbot
@@ -23,6 +24,7 @@ def start(client, message):
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
 	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
+	text += "-> Python: `{}`\n".format(python_version())
 	if not me:
 		text += "\nBot is currently turned off, to start bot again, type /settings and click **Start Bot** button"
 	else:
@@ -71,6 +73,7 @@ def settings(client, message):
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
 	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
+	text += "-> Python: `{}`\n".format(python_version())
 	text += "\nJust setup what you need here"
 	if not me:
 		togglestart = "Start Bot"
@@ -136,6 +139,7 @@ def start_stop_bot(client, query):
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
 		text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 		text += "-> Database: `{}`\n".format(DB_AVAIABLE)
+		text += "-> Python: `{}`\n".format(python_version())
 		text += "\n✅ Bot was started!"
 		button = InlineKeyboardMarkup([[InlineKeyboardButton("Stop Bot", callback_data="toggle_startbot")]])
 		try:
@@ -149,6 +153,7 @@ def start_stop_bot(client, query):
 	text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
 	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
+	text += "-> Python: `{}`\n".format(python_version())
 	text += "\n❎ Bot was stopped!"
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("Start Bot", callback_data="toggle_startbot")]])
 	try:

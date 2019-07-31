@@ -12,15 +12,23 @@ from pyrogram import Filters
 
 __MODULE__ = "Google Drive"
 __HELP__ = """
-Download any file from URL or from telegram
+Google Drive stuff, for login just type /gdrive in Assistant bot
 
-──「 **Download From URL** 」──
--> `dl`
+──「 **Download From Drive URL** 」──
+-> `gdrive download`
 Give url as args to download it.
 
-──「 **Download From Telegram** 」──
--> `download`
-Reply a document to download it.
+──「 **Upload From local to Google Drive** 」──
+-> `gdrive upload`
+Upload from local storage to gdrive
+
+──「 **Mirror and save to GDrive file** 」──
+-> `gdrive mirror`
+This can mirror from file download was limited, but not for deleted file
+
+──「 **Mirror from telegram to GDrive** 」──
+-> `gdrive tgmirror`
+Download file from telegram, and mirror it to Google Drive
 """
 
 
