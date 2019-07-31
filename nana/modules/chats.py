@@ -5,9 +5,16 @@ from pyrogram import Filters
 from nana.modules.database.chats_db import update_chat, get_all_chats
 
 
+MESSAGE_RECOUNTER = 0
+
+def get_msgc():
+	return MESSAGE_RECOUNTER
+
 @app.on_message(Filters.group, group=10)
 def UpdateMyChats(client, message):
+	global MESSAGE_RECOUNTER
 	update_chat(message.chat)
+	MESSAGE_RECOUNTER += 1
 
 
 @app.on_message(Filters.user("self") & Filters.command(["chatlist"], Command))

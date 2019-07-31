@@ -1,3 +1,4 @@
+import time
 import logging
 import importlib
 
@@ -8,6 +9,11 @@ from nana import app, Owner, log, Command, SETTINGS_BOT, setbot
 from nana.modules import ALL_MODULES
 from nana.settings import ALL_SETTINGS
 
+
+RUNTIME = 0
+
+def get_runtime():
+	return RUNTIME
 
 def reload_userbot():
 	app.start()
@@ -32,3 +38,4 @@ if __name__ == '__main__':
 	log.info("Settings bot modules: " + str(ALL_SETTINGS))
 	log.info("-----------------------")
 	log.info("Sukses menjalankan bot!")
+	RUNTIME = int(time.time())
