@@ -10,15 +10,42 @@ from nana import app, Command
 from pyrogram import Filters
 from PIL import Image, ImageDraw, ImageFont
 
-NamaModul = "Meme"
-HelpCMD = ['`tes <teks>` - Kirim stiker mr. crab',
-'`mock <*teks>` - Kirim stiker spongebob mocking',
-'`😂` - Balas pesan untuk di mock teksnya',
-'`mocktxt` - Balas pesan untuk di mock teksnya',
-'`1`/`1a` `<teks` - Teksnya jalan gan',
-'`2 <teks>` - Teksnya joged-joged gan']
 
-bantuan = """y"""
+__MODULE__ = "Memes"
+__HELP__ = """
+This module can help you for generate memes and style text, just take a look and try in here!
+Please note this can cause spams on group!
+
+──「 **Spongebob Mocking** 」──
+-> `mock`
+Reply someone message, and mock his/her text! This will generate spongebob mocking sticker, for text use `mocktxt` instead.
+
+──「 **Emoji insertion** 」──
+-> `😂`
+Reply someone message, then add randoms emoji to his/her text.
+
+──「 **Mocking text** 」──
+-> `mocktxt`
+Mock someone message, text only.
+
+──「 **Meme generator** 」──
+-> `meme`
+For get avaiable type, just send `meme`, to get example image of type, just send `meme <type>`.
+Usage:
+```meme <up text>
+<down text```
+
+──「 **Vaporwave/Aestethic** 」──
+-> `aes`
+Convert your text to Vaporwave/Aestethic style.
+
+──「 **Stylish edited text** 」──
+-> `1` (forward)
+-> `1a` (backward)
+-> `2` (mocking)
+-> `3` (typing message)
+"""
+
 
 MOCK_SPONGE = "https://telegra.ph/file/c2a5d11e28168a269e136.jpg"
 
@@ -61,7 +88,7 @@ def mock_spongebob(client, message):
 	im = Image.open("nana/cache/sponge.png")
 	MAX_W, MAX_H = im.size
 	draw = ImageDraw.Draw(im)
-	font = ImageFont.truetype('nana/helpers/IMPACT.TTF', 28)
+	font = ImageFont.truetype('nana/helpers/IMPACT.TTF', 35)
 	newline = 0
 	for line in para:
 		newline += 1.25

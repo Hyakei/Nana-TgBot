@@ -6,8 +6,19 @@ import pyrogram
 from nana import app, Command
 from pyrogram import Filters
 
-NamaModul = "Sed/Regex"
-HelpCMD = ['`s/<teks awal>/<teks diganti>/<g=global, i=local>` - Ganti kata yang dibalas dengan regex']
+__MODULE__ = "Sed"
+__HELP__ = """
+Need help?
+Learn regex here: regexone.com
+
+──「 **Regex** 」──
+-> `s`
+Yes, just do `s test/text`.
+Example: "This is test"
+Reply: s test/text
+Result: "This is text"
+Flags: i (ignore), g (global)
+"""
 
 DELIMITERS = ("/", ":", "|", "_")
 

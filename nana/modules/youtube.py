@@ -13,16 +13,25 @@ from nana import app, Command
 from pyrogram import Filters
 from nana.helpers.parser import cleanhtml
 
-NamaModul = "YouTube"
-HelpCMD = ['`youtube/yt <teks>` - Mencari video dari youtube',
-'`ytdl <url youtube>` - Mendownload video dari youtube',
-'`ytmusic <url youtube>` - Mengirim hasil convert musik dari video youtube']
+__MODULE__ = "YouTube"
+__HELP__ = """
+Search, download, convert music from youtube!
+Enjoy~
 
-bantuan = """
-Gunakan:
-`youtube <judul>`
-`ytdl <link>`
-`ytmusic <link>`
+──「 **Search video** 」──
+-> `youtube`
+-> `yt`
+Give text as args for search from youtube, will send result more than 10 depending on yt page.
+
+──「 **Download video** 」──
+-> `ytdl`
+Download youtube video (mp4), you can select resolutions from the list.
+
+──「 **Convert to music** 」──
+-> `ytmusic`
+-> `ytaudio`
+Download and convert to music, send to tg as music.
+Powered by @YTAudioBot, because no need extra bandwith in your client :p
 """
 
 @app.on_message(Filters.user("self") & Filters.command(["youtube", "yt"], Command))
@@ -49,7 +58,7 @@ def youtube_search(client, message):
 		yutub += '<b>{}.</b> <a href="{}">{}</a> {}\n'.format(nomor, "https://www.youtube.com" + url, title, vidtime)
 	message.edit(yutub, disable_web_page_preview=True, parse_mode="html")
 
-@app.on_message(Filters.user("self") & Filters.command(["ytdl", "yt"], Command))
+@app.on_message(Filters.user("self") & Filters.command(["ytdl"], Command))
 def youtube_downloader(client, message):
 	args = message.text.split(None, 1)
 	if len(args) == 1:
@@ -75,7 +84,7 @@ def youtube_downloader(client, message):
 	for x in yt:
 		capt += "\n-> [{}]({})".format(x['format'], x['url'])
 	try:
-		client.send_photo(message.chat.id, photo=thumb, caption=capt, reply_to_message_id=message.message_id, parse_mode='md')
+		client.send_photo(message.chat.id, photo=thumb, caption=capt, reply_to_message_id=message.message_id, parse_mode='markdown')
 	except:
 		message.edit(capt + "[⁣]({})".format(thumb), disable_web_page_preview=True)
 

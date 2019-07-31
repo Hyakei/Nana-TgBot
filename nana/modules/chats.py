@@ -1,11 +1,20 @@
 import os
 
-from nana import app, Command
+from nana import app, Command, DB_AVAIABLE
 from pyrogram import Filters
 from nana.modules.database.chats_db import update_chat, get_all_chats
 
 
 MESSAGE_RECOUNTER = 0
+
+__MODULE__ = "Chats"
+__HELP__ = """
+This module is collect your chat list, when message was received from unknown chat, and that chat was not in database, then save that chat info to your database.
+
+──「 **Export chats** 」──
+-> `chatlist`
+Send your chatlist to your saved messages
+"""
 
 def get_msgc():
 	return MESSAGE_RECOUNTER
@@ -13,12 +22,16 @@ def get_msgc():
 @app.on_message(Filters.group, group=10)
 def UpdateMyChats(client, message):
 	global MESSAGE_RECOUNTER
-	update_chat(message.chat)
+	if DB_AVAIABLE:
+		update_chat(message.chat)
 	MESSAGE_RECOUNTER += 1
 
 
 @app.on_message(Filters.user("self") & Filters.command(["chatlist"], Command))
 def get_chat(client, message):
+	if not DB_AVAIABLE:
+		message.edit("Your database is not avaiable!")
+		return
 	all_chats = get_all_chats()
 	chatfile = 'List of chats that I joined.\n'
 	for chat in all_chats:

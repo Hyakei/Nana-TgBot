@@ -13,6 +13,8 @@ from nana.settings import ALL_SETTINGS
 
 
 RUNTIME = 0
+HELP_COMMANDS = {}
+
 
 def get_runtime():
 	return RUNTIME
@@ -42,6 +44,15 @@ if __name__ == '__main__':
 	app.start()
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
+		if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+			imported_module.__MODULE__ = imported_module.__MODULE__
+		if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+			if not imported_module.__MODULE__.lower() in HELP_COMMANDS:
+				HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
+			else:
+				raise Exception("Can't have two modules with the same name! Please change one")
+		if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
+			HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
 	# Settings bot
 	if SETTINGS_BOT:
 		setbot.start()

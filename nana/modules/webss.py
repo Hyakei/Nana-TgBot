@@ -3,14 +3,18 @@ import os, shutil, requests
 from nana import app, Command, thumbnail_API, screenshotlayer_API
 from pyrogram import Filters
 
-NamaModul = "Screenshot Website"
-HelpCMD = ['`print <url>` - Menscreenshot depan website',
-'`ss <url>` - Menscreenshot full website']
+__MODULE__ = "Screenshot Website"
+__HELP__ = """
+Take a picture of website. You can select one for use this.
 
-bantuan = """
-**Penggunaan print web:**
-`/print <website>`
-Contoh: `/print google.com`
+──「 **Take ss website** 」──
+-> `print`
+Send web screenshot, not full webpage. Send as picture
+
+──「 **Take ss website (more)** 」──
+-> `ss`
+-> args: `full` (args are optional)
+Take screenshot of that website, if `full` args given, take full of website and send image as document
 """
 
 @app.on_message(Filters.user("self") & Filters.command(["print"], Command))

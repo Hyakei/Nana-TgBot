@@ -6,8 +6,25 @@ from nana import app, Owner, Command
 from nana.helpers.parser import mention_html, mention_markdown
 from pyrogram import Filters
 
-NamaModul = "Admin List"
-HelpCMD = ['`admin <*grup tag/id>` - Melihat semua admin pada grup target']
+__MODULE__ = "Admin List"
+__HELP__ = """
+This module meant for check admins/bots or report someone, not for spamming groups.
+Please note spam admin will give you instant banned. Don't play with this command if you understand what it cost!
+
+──「 **Admin list** 」──
+-> `admins`
+-> `adminlist`
+For get admin list in spesific chat or current chat
+
+──「 **Report admin** 」──
+-> `reportadmin`
+-> `reportadmins`
+To report someone or report your message to all admins
+
+──「 **Bot list** 」──
+-> `botlist`
+Check all bots in spesific chat or current chat
+"""
 
 
 @app.on_message(Filters.user("self") & Filters.command(["admins", "adminlist"], Command))

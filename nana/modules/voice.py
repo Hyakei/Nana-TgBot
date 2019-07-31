@@ -5,17 +5,15 @@ from gtts import gTTS
 from nana import app, Command
 from pyrogram import Filters
 
-NamaModul = "Voice TTS"
-HelpCMD = ['`voice <*lang> <teks>` - Mengirim TTS auto generated dari google']
+__MODULE__ = "Voice"
+__HELP__ = """
+Convert text to voice chat.
+Currently avaiable for english only.
 
-bantuan = """Penggunaan:
-`/voice <bahasa> <kata>`
-Contoh: `/voice en hello`
-Output: `voice`
-Atau
-`/voice <kata>`
-Contoh: `/voice hello`
-Output: `voice`"""
+──「 **Voice** 」──
+-> `voice`
+Convert text to voice by google tts
+"""
 
 # TODO setlang
 

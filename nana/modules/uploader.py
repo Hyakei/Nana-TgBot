@@ -6,9 +6,19 @@ from nana import app, Command
 from pyrogram import Filters
 
 
-NamaModul = "Uploader"
-HelpCMD = ['`pic <url> <*caption>` - Upload picture from url',
-'`stk <url>` - Upload sticker from url']
+__MODULE__ = "Uploader image"
+__HELP__ = """
+Reupload URL image to telegram without save it first.
+
+──「 **Upload image** 」──
+-> `pic`
+Upload image from URL
+
+──「 **Upload sticker** 」──
+-> `stk`
+Upload image and convert to sticker, please note image from telegraph will result bug (telegram bugs)
+"""
+
 
 @app.on_message(Filters.user("self") & Filters.command(["pic"], Command))
 def PictureUploader(client, message):
