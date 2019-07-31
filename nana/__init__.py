@@ -41,6 +41,8 @@ api_hash = Config.api_hash
 Owner = Config.Owner
 Command = Config.Command
 OutputDownload = Config.OutputDownload
+if OutputDownload[-1] != "/":
+	OutputDownload = OutputDownload + "/"
 log = logging.getLogger()
 
 # APIs
