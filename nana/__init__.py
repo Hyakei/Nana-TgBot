@@ -43,6 +43,10 @@ Command = Config.Command
 OutputDownload = Config.OutputDownload
 log = logging.getLogger()
 
+# APIs
+thumbnail_API = Config.thumbnail_API
+screenshotlayer_API = Config.screenshotlayer_API
+
 # LOADER
 USERBOT_LOAD = Config.USERBOT_LOAD
 USERBOT_NOLOAD = Config.USERBOT_NOLOAD
