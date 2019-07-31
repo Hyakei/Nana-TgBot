@@ -1,9 +1,11 @@
 import time
 import logging
 import importlib
+import sys
+import traceback
 
 import pyrogram
-from pyrogram import Filters
+from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton
 from nana import app, Owner, log, Command, SETTINGS_BOT, setbot
 
 from nana.modules import ALL_MODULES
@@ -20,6 +22,19 @@ def reload_userbot():
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
 		importlib.reload(imported_module)
+
+
+def except_hook(errtype, value, tback):
+	sys.__excepthook__(type, value, tback)
+	errors = traceback.format_exception(etype=type, value=value, tb=tback)
+	button = InlineKeyboardMarkup([[InlineKeyboardButton("🐞 Report bugs", callback_data="report_errors")]])
+	text = "An error has accured!\n\n```{}```\n".format("".join(errors))
+	if errtype == ModuleNotFoundError:
+		text += "\nWhat should you do is: **pip install -r requirements.txt**"
+	setbot.send_message(app.get_me().id, text, reply_markup=button)
+
+sys.excepthook = except_hook
+
 
 
 if __name__ == '__main__':

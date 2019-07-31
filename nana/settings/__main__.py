@@ -156,3 +156,14 @@ def start_stop_bot(client, query):
 	except errors.exceptions.bad_request_400.MessageNotModified:
 		pass
 	client.answer_callback_query(query.id, "Bot was stopped!")
+
+
+@setbot.on_callback_query(dynamic_data_filter("report_errors"))
+def report_some_errors(client, query):
+	text = "Hi @AyraHikari, i got an error for you.\nPlease take a look and fix it if possible.\n\nThank you ❤️"
+	err = query.message.text
+	open("nana/cache/errors.txt", "w").write(err)
+	query.message.edit_reply_markup(reply_markup=None)
+	app.send_document("EmiliaOfficial", "nana/cache/errors.txt", caption=text)
+	os.remove("nana/cache/errors.txt")
+	client.answer_callback_query(query.id, "Report was sent!")
