@@ -165,7 +165,7 @@ def log(client, message):
 	try:
 		message.edit(str(message), parse_mode="")
 	except:
-		data = reporting(str(message))
+		data = deldog(str(message))
 		message.edit(data)
 
 @app.on_message(Filters.user("self") & Filters.command(["dc"], Command))
