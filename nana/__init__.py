@@ -5,6 +5,7 @@ import re
 import requests
 
 from pyrogram import Client
+from pydrive.auth import GoogleAuth
 
 # Postgresql
 import threading
@@ -59,6 +60,8 @@ DB_URL = Config.DB_URL
 SETTINGS_BOT = Config.SETTINGS_BOT
 SETTINGS_BOT_TOKEN = Config.SETTINGS_BOT_TOKEN
 AdminSettings = Config.AdminSettings
+
+gauth = GoogleAuth()
 
 DB_AVAIABLE = False
 

@@ -35,8 +35,6 @@ def except_hook(errtype, value, tback):
 		text += "\nHint: Try this in your terminal `pip install -r requirements.txt`"
 	setbot.send_message(app.get_me().id, text, reply_markup=button)
 
-sys.excepthook = except_hook
-
 
 
 if __name__ == '__main__':
@@ -63,5 +61,6 @@ if __name__ == '__main__':
 	log.info("-----------------------")
 	log.info("Settings bot modules: " + str(ALL_SETTINGS))
 	log.info("-----------------------")
-	log.info("Sukses menjalankan bot!")
+	log.info("Bot run successfully!")
 	RUNTIME = int(time.time())
+	sys.excepthook = except_hook

@@ -8,11 +8,15 @@ from pyDownload import Downloader
 
 __MODULE__ = "Downloads"
 __HELP__ = """
-This command means for helping development
+Download any file from URL or from telegram
 
-──「 **Execution** 」──
--> `exec`
-Execute a python commands.
+──「 **Download From URL** 」──
+-> `dl`
+Give url as args to download it.
+
+──「 **Download From Telegram** 」──
+-> `download`
+Reply a document to download it.
 """
 
 

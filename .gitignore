@@ -106,3 +106,4 @@ venv.bak/
 nana/config.py
 nana/session/*
 !nana/session/README.md
+client_secrets.json
