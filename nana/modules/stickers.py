@@ -54,6 +54,7 @@ def kang_stickers(client, message):
 	checkfull = app.get_history("@Stickers", limit=1)[0].text
 	if checkfull == "Whoa! That's probably enough stickers for one pack, give it a break. A pack can't have more than 120 stickers at the moment.":
 		message.edit("Your sticker pack was full!\nPlease change one from your Assistant")
+		os.remove('nana/cache/sticker.png')
 		return
 	client.send_document("@Stickers", 'nana/cache/sticker.png')
 	os.remove('nana/cache/sticker.png')
