@@ -85,7 +85,7 @@ async def Updater(client, message):
 		except exc.GitCommandError:
 			repo.git.reset('--hard')
 			await message.edit('Successfully Updated!\nBot is restarting...')
-		update_changelog(changelog)
+		await update_changelog(changelog)
 		await restart_all()
 	else:
 		await message.edit("Usage:\n-> `update` to check update\n-> `update now` to update latest commits\nFor more information check at your Assistant")
