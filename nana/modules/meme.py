@@ -30,10 +30,11 @@ Mock someone message, text only.
 
 ──「 **Meme generator** 」──
 -> `meme`
-For get avaiable type, just send `meme`, to get example image of type, just send `meme <type>`.
+For get avaiable type, just send `meme`, to get example image of type, just send `meme (type)`.
+To leave it blank, set text to _
 Usage:
-```meme <up text>
-<down text```
+```meme (up text)
+(down text)```
 
 ──「 **Vaporwave/Aestethic** 」──
 -> `aes`

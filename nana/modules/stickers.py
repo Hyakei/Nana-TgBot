@@ -9,6 +9,19 @@ from nana.settings.database.stickers_db import get_sticker_set
 from pyrogram import Filters
 
 
+__MODULE__ = "Stickers"
+__HELP__ = """
+This module can help you steal sticker, just reply that sticker, type kang, and sticker is your.
+
+──「 **Steal Sticker** 」──
+-> `kang`
+Reply a sticker/image, and sticker is your.
+
+──「 **Set Sticker Pack** 」──
+-> /setsticker
+This command only for Assistant bot, to set your sticker pack. When sticker pack is full, type that command, and select another. Or create new at @Stickers
+"""
+
 @app.on_message(Filters.user("self") & Filters.command(["kang"], Command))
 def kang_stickers(client, message):
 	sticker_pack = get_sticker_set(message.from_user.id)
