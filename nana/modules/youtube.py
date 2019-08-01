@@ -6,7 +6,6 @@ import requests
 import time
 
 from bs4 import BeautifulSoup
-from pytube import YouTube
 from pathlib import Path
 
 from nana import app, Command
