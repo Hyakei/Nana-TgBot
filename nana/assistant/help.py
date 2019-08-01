@@ -38,6 +38,13 @@ def help_command(client, message):
 	help_parser(client, message.chat.id, HELP_STRINGS)
 
 
+def help_button_callback(_, query):
+	if re.match(r"help_", query.data):
+		return True
+
+help_button_create = Filters.create(help_button_callback)
+
+@setbot.on_callback_query(help_button_create)
 def help_button(client, query):
 	mod_match = re.match(r"help_module\((.+?)\)", query.data)
 	prev_match = re.match(r"help_prev\((.+?)\)", query.data)
@@ -69,6 +76,3 @@ def help_button(client, query):
 			query.message.edit(text=HELP_STRINGS,
 								  reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELP_COMMANDS, "help")))
 
-
-help_callback_handler = CallbackQueryHandler(help_button)
-setbot.add_handler(help_callback_handler)

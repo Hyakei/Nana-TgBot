@@ -1,12 +1,14 @@
 import time
 import logging
 import importlib
+import random
 import sys
 import traceback
+import threading
 
 import pyrogram
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton
-from nana import app, Owner, log, Command, ASSISTANT_BOT, setbot
+from nana import app, Owner, log, Command, ASSISTANT_BOT, setbot, USERBOT_VERSION, ASSISTANT_VERSION
 
 from nana.modules import ALL_MODULES
 from nana.assistant import ALL_SETTINGS
@@ -24,6 +26,39 @@ def reload_userbot():
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
 		importlib.reload(imported_module)
+
+def shutdown():
+	global RUNTIME, HELP_COMMANDS
+	setbot.send_message(Owner, "Bot is restarting...")
+	setbot.restart()
+	app.restart()
+	# Reset global var
+	RUNTIME = 0
+	HELP_COMMANDS = {}
+	# Assistant bot
+	for setting in ALL_SETTINGS:
+		imported_module = importlib.import_module("nana.assistant." + setting)
+		importlib.reload(imported_module)
+	# Nana userbot
+	for modul in ALL_MODULES:
+		imported_module = importlib.import_module("nana.modules." + modul)
+		if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+			imported_module.__MODULE__ = imported_module.__MODULE__
+		if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+			if not imported_module.__MODULE__.lower() in HELP_COMMANDS:
+				HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
+			else:
+				raise Exception("Can't have two modules with the same name! Please change one")
+		if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
+			HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
+		importlib.reload(imported_module)
+	setbot.send_message(Owner, "Restart successfully!")
+
+def restart_all():
+	# Restarting and load all plugins
+	threading.Thread(target=shutdown).start()
+
+RANDOM_STICKERS = ["CAADAgAD6EoAAuCjggf4LTFlHEcvNAI", "CAADAgADf1AAAuCjggfqE-GQnopqyAI", "CAADAgADaV0AAuCjggfi51NV8GUiRwI"]
 
 
 def except_hook(errtype, value, tback):
