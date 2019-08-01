@@ -35,14 +35,14 @@ def except_hook(errtype, value, tback):
 		text += "\nHint: Try this in your terminal `pip install -r requirements.txt`"
 	setbot.send_message(app.get_me().id, text, reply_markup=button)
 
+sys.excepthook = except_hook
 
 
 if __name__ == '__main__':
 	# Settings bot
-	if SETTINGS_BOT:
-		setbot.start()
-		for setting in ALL_SETTINGS:
-			imported_module = importlib.import_module("nana.settings." + setting)
+	setbot.start()
+	for setting in ALL_SETTINGS:
+		imported_module = importlib.import_module("nana.settings." + setting)
 	# Nana
 	app.start()
 	for modul in ALL_MODULES:
@@ -63,4 +63,3 @@ if __name__ == '__main__':
 	log.info("-----------------------")
 	log.info("Bot run successfully!")
 	RUNTIME = int(time.time())
-	sys.excepthook = except_hook
