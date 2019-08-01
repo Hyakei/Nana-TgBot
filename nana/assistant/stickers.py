@@ -27,8 +27,7 @@ def get_stickers(client, message):
 
 def get_stickerlist(message):
 	global TEMP_KEYBOARD, USER_SET
-	user = message.from_user.id
-	if message.from_user.id in list(USER_SET):
+	if message.from_user and message.from_user.id in list(USER_SET):
 		return True
 	else:
 		TEMP_KEYBOARD = []
