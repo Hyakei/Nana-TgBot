@@ -1,0 +1,10 @@
+requests
+git+https://github.com/AyraHikari/pyrogram
+TgCrypto
+pydrive
+sqlalchemy
+psycopg2
+bs4
+pyDownload
+pillow
+gtts
