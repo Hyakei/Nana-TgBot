@@ -19,13 +19,13 @@ def gen_chlog(repo, diff):
 		changelog += f'• [{cl.committed_datetime.strftime(d_form)}]: {cl.summary} <{cl.author}>\n'
 	return changelog
 
-def update_changelog(changelog):
-	setbot.send_sticker(Owner, random.choice(RANDOM_STICKERS))
+async def update_changelog(changelog):
+	await setbot.send_sticker(Owner, random.choice(RANDOM_STICKERS))
 	text = "**Update successfully!**\n"
 	text += f"🎉 Welcome to Nana Bot v{USERBOT_VERSION} & Assistant v{ASSISTANT_VERSION}\n"
 	text += "\n──「 **Update changelogs** 」──\n"
 	text += changelog
-	setbot.send_message(Owner, text)
+	await setbot.send_message(Owner, text)
 
 
 async def update_checker():
@@ -104,7 +104,7 @@ async def update_button(client, query):
 		upstream.pull(brname)
 		await query.message.edit_text('Successfully Updated!\nBot is restarting...')
 	except GitCommandError:
-		upstream.git.reset('--hard')
+		repo.git.reset('--hard')
 		await query.message.edit_text('Successfully Updated!\nBot is restarting...')
 	await update_changelog(changelog)
 	await restart_all()
