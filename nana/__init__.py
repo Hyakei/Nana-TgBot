@@ -23,7 +23,11 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     LOGGER.error("You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting.")
     quit(1)
 
-from nana.config import Development as Config
+try:
+	from nana.config import Development as Config
+except ModuleNotFoundError:
+	LOGGER.error("You need to place config.py in nana dir!")
+	quit(1)
 
 USERBOT_VERSION = "0.1"
 ASSISTANT_VERSION = "0.1"

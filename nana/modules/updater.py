@@ -30,7 +30,7 @@ async def gen_chlog(repo, diff):
 	return changelog
 
 
-OFFICIAL_BRANCH = ('master', 'dev')
+OFFICIAL_BRANCH = ('master', 'dev', 'asyncio')
 REPOSITORY = "https://github.com/AyraHikari/Nana-TgBot"
 
 @app.on_message(Filters.user("self") & Filters.command(["update"], Command))
