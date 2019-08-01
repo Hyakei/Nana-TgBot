@@ -19,7 +19,7 @@ def gdrive_helper(client, message):
 		gauth.LoadCredentialsFile("nana/session/drive")
 		if gauth.credentials is None:
 			authurl = gauth.GetAuthUrl()
-			teks = "First, you must log in to your Google drive first.\n\n[Visit this link and login to your Google account]({})\n\nAfter that you will get a verification code, type `/gdrive )verification code)` without '(' or ')'.".format(authurl)
+			teks = "First, you must log in to your Google drive first.\n\n[Visit this link and login to your Google account]({})\n\nAfter that you will get a verification code, type `/gdrive (verification code)` without '(' or ')'.".format(authurl)
 			message.reply(teks)
 			return
 		message.reply("You're already logged in!\nTo logout type `/gdrive logout`")

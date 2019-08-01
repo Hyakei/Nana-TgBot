@@ -67,12 +67,12 @@ def get_driveinfo(driveid):
 def gdrive_stuff(client, message):
 	gauth.LoadCredentialsFile("nana/session/drive")
 	if gauth.credentials is None:
-		message.edit("You are not logged in to your google drive account!\nYour assistant boy may help you to login google drive, check your assistant bot for more information!")
+		message.edit("You are not logged in to your google drive account!\nYour assistant bot may help you to login google drive, check your assistant bot for more information!")
 		gdriveclient = os.path.isfile("client_secrets.json")
 		if not gdriveclient:
 			setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive 🙂\nI can help you to login.\n\nFirst of all, you need to activate your google drive API\n1. [Go here](https://developers.google.com/drive/api/v3/quickstart/python), click **Enable the drive API**\n2. Login to your google account (skip this if you're already logged in)\n3. After logged in, click **Enable the drive API** again, and click **Download Client Configuration** button, download that.\n4. After downloaded that file, rename `credentials.json` to `client_secrets.json`, and upload to your bot dir (not in nana dir)\n\nAfter that, you can go next guide by type /gdrive")
 		else:
-			setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive :)\nI can help you to login.\n\n**To login Google Drive**\n1. `/gdrive login` to get login URL\n2. After you're logged in, copy your Token.\n3. `/gdrive login (token)` without `(` or `)` to login, and your session will saved to `nana/session/drive`.\n\nDon't share your session to someone, else they will hack your google drive account!")
+			setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive :)\nI can help you to login.\n\n**To login Google Drive**\n1. `/gdrive` to get login URL\n2. After you're logged in, copy your Token.\n3. `/gdrive (token)` without `(` or `)` to login, and your session will saved to `nana/session/drive`.\n\nDon't share your session to someone, else they will hack your google drive account!")
 		return
 	elif gauth.access_token_expired:
 		# Refresh them if expired
