@@ -26,7 +26,7 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
 from nana.config import Development as Config
 
 USERBOT_VERSION = "0.1"
-SETTINGSBOT_VERSION = "0.1"
+ASSISTANT_VERSION = "0.1"
 
 # Version
 lang_code = Config.lang_code
@@ -53,12 +53,12 @@ screenshotlayer_API = Config.screenshotlayer_API
 # LOADER
 USERBOT_LOAD = Config.USERBOT_LOAD
 USERBOT_NOLOAD = Config.USERBOT_NOLOAD
-SETTINGSBOT_LOAD = Config.SETTINGSBOT_LOAD
-SETTINGSBOT_NOLOAD = Config.SETTINGSBOT_NOLOAD
+ASSISTANT_LOAD = Config.ASSISTANT_LOAD
+ASSISTANT_NOLOAD = Config.ASSISTANT_NOLOAD
 
 DB_URL = Config.DB_URL
-SETTINGS_BOT = Config.SETTINGS_BOT
-SETTINGS_BOT_TOKEN = Config.SETTINGS_BOT_TOKEN
+ASSISTANT_BOT = Config.ASSISTANT_BOT
+ASSISTANT_BOT_TOKEN = Config.ASSISTANT_BOT_TOKEN
 AdminSettings = Config.AdminSettings
 
 gauth = GoogleAuth()
@@ -82,8 +82,8 @@ def mulaisql() -> scoped_session:
 BASE = declarative_base()
 SESSION = mulaisql()
 
-if SETTINGS_BOT:
-	setbot = Client("nana/session/ManageBot", api_id=api_id, api_hash=api_hash, bot_token=SETTINGS_BOT_TOKEN, workers=8)
+if ASSISTANT_BOT:
+	setbot = Client("nana/session/ManageBot", api_id=api_id, api_hash=api_hash, bot_token=ASSISTANT_BOT_TOKEN, workers=8)
 else:
 	setbot = None
 

@@ -13,10 +13,10 @@ class Config(object):
 	device_model = "PC" # Device model
 	system_version = "Linux" # OS system type
 
-	# Use real bot for settings
+	# Use real bot for Assistant
 	# Pass False if you dont want
-	SETTINGS_BOT = False
-	SETTINGS_BOT_TOKEN = ""
+	ASSISTANT_BOT = True
+	ASSISTANT_BOT_TOKEN = ""
 
 	# Required for some features
 	# Owner and AdminSettings is for your Assistant bot only
@@ -34,8 +34,8 @@ class Config(object):
 	USERBOT_LOAD = []
 	USERBOT_NOLOAD = []
 	# manager bot
-	SETTINGSBOT_LOAD = []
-	SETTINGSBOT_NOLOAD = []
+	ASSISTANT_LOAD = []
+	ASSISTANT_NOLOAD = []
 	
 
 class Production(Config):

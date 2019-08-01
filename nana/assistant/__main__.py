@@ -3,7 +3,7 @@ import os, requests
 from bs4 import BeautifulSoup
 from platform import python_version, uname
 
-from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, SETTINGSBOT_VERSION
+from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, ASSISTANT_VERSION
 from __main__ import reload_userbot
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton, errors
 
@@ -22,7 +22,7 @@ def start(client, message):
 		text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
 	else:
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
-	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
+	text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	text += "-> Python: `{}`\n".format(python_version())
 	if not me:
@@ -52,7 +52,7 @@ def get_myself(client, message):
 		text += "Username: @{}\n".format(me.username)
 	text += "Phone number: `{}`\n".format(me.phone_number)
 	text += "`Nana Version    : v{}`\n".format(USERBOT_VERSION)
-	text += "`Manager Version : v{}`".format(SETTINGSBOT_VERSION)
+	text += "`Manager Version : v{}`".format(ASSISTANT_VERSION)
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]])
 	if me.photo:
 		client.send_photo(message.chat.id, photo=getpp, caption=text, reply_markup=button)
@@ -71,7 +71,7 @@ def settings(client, message):
 		text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
 	else:
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
-	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
+	text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	text += "-> Python: `{}`\n".format(python_version())
 	text += "\nJust setup what you need here"
@@ -126,7 +126,7 @@ def start_stop_bot(client, query):
 		reload_userbot()
 		text = "**⚙️ Welcome to Nana Settings!**\n"
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
-		text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
+		text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
 		text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 		text += "-> Python: `{}`\n".format(python_version())
 		text += "\n✅ Bot was started!"
@@ -140,7 +140,7 @@ def start_stop_bot(client, query):
 	app.stop()
 	text = "**⚙️ Welcome to Nana Settings!**\n"
 	text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
-	text += "-> Bot Settings: `Running (v{})`\n".format(SETTINGSBOT_VERSION)
+	text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	text += "-> Python: `{}`\n".format(python_version())
 	text += "\n❎ Bot was stopped!"

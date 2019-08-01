@@ -1,6 +1,6 @@
 import os, time
 
-from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, SETTINGSBOT_VERSION
+from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, ASSISTANT_VERSION
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton, errors
 from __main__ import get_runtime
 from nana.modules.chats import get_msgc

@@ -6,10 +6,10 @@ import traceback
 
 import pyrogram
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton
-from nana import app, Owner, log, Command, SETTINGS_BOT, setbot
+from nana import app, Owner, log, Command, ASSISTANT_BOT, setbot
 
 from nana.modules import ALL_MODULES
-from nana.settings import ALL_SETTINGS
+from nana.assistant import ALL_SETTINGS
 
 
 RUNTIME = 0
@@ -39,11 +39,11 @@ sys.excepthook = except_hook
 
 
 if __name__ == '__main__':
-	# Settings bot
+	# Assistant bot
 	setbot.start()
 	for setting in ALL_SETTINGS:
-		imported_module = importlib.import_module("nana.settings." + setting)
-	# Nana
+		imported_module = importlib.import_module("nana.assistant." + setting)
+	# Nana userbot
 	app.start()
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 	log.info("-----------------------")
 	log.info("Userbot modules: " + str(ALL_MODULES))
 	log.info("-----------------------")
-	log.info("Settings bot modules: " + str(ALL_SETTINGS))
+	log.info("Assistant modules: " + str(ALL_SETTINGS))
 	log.info("-----------------------")
 	log.info("Bot run successfully!")
 	RUNTIME = int(time.time())

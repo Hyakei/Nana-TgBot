@@ -1,2 +1,2 @@
 # Nana-TgBot
-Userbot + Bot settings for Telegram
+Userbot + Assistant for Telegram

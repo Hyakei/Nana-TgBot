@@ -4,7 +4,7 @@ import os
 from PIL import Image
 
 from nana import app, setbot, Command
-from nana.settings.database.stickers_db import get_sticker_set
+from nana.assistant.database.stickers_db import get_sticker_set
 
 from pyrogram import Filters
 

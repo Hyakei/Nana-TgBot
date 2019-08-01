@@ -1,7 +1,7 @@
 import time
 
 from nana import app, setbot, AdminSettings
-from nana.settings.database.stickers_db import set_sticker_set, get_sticker_set
+from nana.assistant.database.stickers_db import set_sticker_set, get_sticker_set
 
 from pyrogram import Filters, MessageHandler, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
