@@ -123,7 +123,6 @@ async def start_stop_bot(client, query):
 	try:
 		me = await app.get_me()
 	except ConnectionError:
-		await app.stop()
 		await reload_userbot()
 		text = "**⚙️ Welcome to Nana Settings!**\n"
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
