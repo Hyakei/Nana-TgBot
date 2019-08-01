@@ -100,9 +100,9 @@ async def update_button(client, query):
 	try:
 		upstream.pull(brname)
 		await query.message.edit_text('Successfully Updated!\nBot is restarting...')
-	except GitCommandError:
+	except exc.GitCommandError:
 		repo.git.reset('--hard')
-		await query.message.edit_text('Successfully Updated!\nBot is restarting...')
+		await query.message.edit_text('Successfully Force Updated!\nBot is restarting...')
 	await update_changelog(changelog)
 	await restart_all()
 
