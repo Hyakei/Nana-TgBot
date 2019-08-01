@@ -50,7 +50,12 @@ Then you ready to go next guide
 
 Install all requirements by python, in your terminal type this:
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
+```
+
+If you're using pipenv, use this instead:
+```
+pipenv install -r requirements.txt
 ```
 
 ## Install Database
@@ -87,3 +92,24 @@ psql YOUR_DB_NAME -h YOUR_HOST YOUR_USER
 sqldbtype://YOUR_USER:password@localhost:5432/YOUR_DB_NAME
 ```
 
+## Run NanaBot and Assistant
+
+To run this bot, just type
+```
+python -m nana
+```
+
+Or if you're using pipenv, do this instead
+```
+pipenv run python -m nana
+```
+
+# Getting update
+
+Assistant will check update every bot is running, make sure you're on official branch.
+
+To check update manual, just type `update` with Command (default is .) in your nana bot.
+
+To get update, type `update now` in your nana bot.
+
+Or you can update via Assistant (If they notify you), just click Update Now and wait for update!
