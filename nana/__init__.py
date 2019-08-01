@@ -32,6 +32,10 @@ except ModuleNotFoundError:
 USERBOT_VERSION = "0.1"
 ASSISTANT_VERSION = "0.1"
 
+OFFICIAL_BRANCH = ('master', 'dev', 'asyncio')
+REPOSITORY = "https://github.com/AyraHikari/Nana-TgBot"
+RANDOM_STICKERS = ["CAADAgAD6EoAAuCjggf4LTFlHEcvNAI", "CAADAgADf1AAAuCjggfqE-GQnopqyAI", "CAADAgADaV0AAuCjggfi51NV8GUiRwI"]
+
 # Version
 lang_code = Config.lang_code
 device_model = Config.device_model

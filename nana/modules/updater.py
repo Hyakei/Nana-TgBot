@@ -1,6 +1,6 @@
 import os
 
-from nana import app, Command
+from nana import app, Command, OFFICIAL_BRANCH, REPOSITORY
 from __main__ import restart_all
 from pyrogram import Filters
 from nana.assistant.updater import update_changelog
@@ -29,9 +29,6 @@ async def gen_chlog(repo, diff):
 		changelog += f'• [{cl.committed_datetime.strftime(d_form)}]: {cl.summary} <{cl.author}>\n'
 	return changelog
 
-
-OFFICIAL_BRANCH = ('master', 'dev', 'asyncio')
-REPOSITORY = "https://github.com/AyraHikari/Nana-TgBot"
 
 @app.on_message(Filters.user("self") & Filters.command(["update"], Command))
 async def Updater(client, message):

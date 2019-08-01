@@ -1,16 +1,13 @@
 import os, time, html, random
 import asyncio
 
-from nana import app, setbot, Owner, AdminSettings, USERBOT_VERSION, ASSISTANT_VERSION, log
+from nana import app, setbot, Owner, AdminSettings, USERBOT_VERSION, ASSISTANT_VERSION, log, OFFICIAL_BRANCH, REPOSITORY, RANDOM_STICKERS
 from __main__ import restart_all
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton, errors
 
 from git import Repo, exc
 
 
-OFFICIAL_BRANCH = ('master', 'dev')
-REPOSITORY = "https://github.com/AyraHikari/Nana-TgBot"
-RANDOM_STICKERS = ["CAADAgAD6EoAAuCjggf4LTFlHEcvNAI", "CAADAgADf1AAAuCjggfqE-GQnopqyAI", "CAADAgADaV0AAuCjggfi51NV8GUiRwI"]
 
 def gen_chlog(repo, diff):
 	changelog = ""
