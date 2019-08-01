@@ -1,8 +1,13 @@
 # Nana-TgBot
 ### Userbot + Assistant for Telegram
 
+Currently in WIP, so do with you own risk!
+Go to our group support for get update about this [@AyraSupport](https://t.me/AyraSupport)
+
+```
 Q: Why need Assistant (Real bot)?
 A: Because real bot will help you a lot for many things, and make user easy to use it.
+```
 
 ```
 For windows user, please use Python 3.6.7 release or Newest instead!
