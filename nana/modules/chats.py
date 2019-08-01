@@ -40,10 +40,10 @@ def get_chat(client, message):
 		else:
 			chatfile += "{} - ({})\n".format(chat.chat_name, chat.chat_id)
 
-	with open("chatlist.txt", "w") as writing:
+	with open("nana/cache/chatlist.txt", "w") as writing:
 		writing.write(str(chatfile))
 		writing.close()
 
 	client.send_document("self", document="chatlist.txt", caption="Here is the chat list that I joined.")
 	message.edit("My chat list exported to my saved messages.")
-	os.remove("chatlist.txt")
+	os.remove("nana/cache/chatlist.txt")
