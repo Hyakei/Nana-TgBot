@@ -51,7 +51,7 @@ Convert your text to Vaporwave/Aestethic style.
 MOCK_SPONGE = "https://telegra.ph/file/c2a5d11e28168a269e136.jpg"
 
 
-def mocking_text(text):
+async def mocking_text(text):
 	teks = list(text)
 	for i, ele in enumerate(teks):
 		if i % 2 != 0:
@@ -64,8 +64,8 @@ def mocking_text(text):
 	return pesan
 
 @app.on_message(Filters.user("self") & Filters.command(["mock"], Command))
-def mock_spongebob(client, message):
-	message.delete()
+async def mock_spongebob(client, message):
+	await message.delete()
 	if message.reply_to_message:
 		splitter = message.text.split(None, 1)
 		if len(splitter) == 1:
@@ -84,7 +84,7 @@ def mock_spongebob(client, message):
 		getimg.raw.decode_content = True
 		shutil.copyfileobj(getimg.raw, f)
 
-	pesan = mocking_text(text)
+	pesan = await mocking_text(text)
 	para = textwrap.wrap(pesan, width=50)
 	im = Image.open("nana/cache/sponge.png")
 	MAX_W, MAX_H = im.size
@@ -107,13 +107,13 @@ def mock_spongebob(client, message):
 		current_h += h + pad
 	im.save('nana/cache/sponge.png')
 	if message.reply_to_message:
-		client.send_sticker(message.chat.id, "nana/cache/sponge.png", reply_to_message_id=message.reply_to_message.message_id)
+		await client.send_sticker(message.chat.id, "nana/cache/sponge.png", reply_to_message_id=message.reply_to_message.message_id)
 	else:
-		client.send_sticker(message.chat.id, "nana/cache/sponge.png")
+		await client.send_sticker(message.chat.id, "nana/cache/sponge.png")
 	os.remove("nana/cache/sponge.png")
 
 @app.on_message(Filters.user("self") & Filters.command(["😂"], Command))
-def haha_emojis(client, message):
+async def haha_emojis(client, message):
 	if message.reply_to_message.message_id:
 		teks = message.reply_to_message.text
 		emojis = ["😂", "😂", "👌", "✌️", "💞", "👍", "👌", "💯", "🎶", "👀", "😂", "👓", "👏", "👐", "🍕", "💥", "🍴", "💦", "💦", "🍑", "🍆", "😩", "😏", "👉👌", "👀", "👅", "😩", "🚰"]
@@ -133,21 +133,21 @@ def haha_emojis(client, message):
 				else:
 					reply_text += c.lower()
 		reply_text += random.choice(emojis)
-		message.edit(reply_text)
+		await message.edit(reply_text)
 
 @app.on_message(Filters.user("self") & Filters.command(["mocktxt"], Command))
-def mock_text(client, message):
+async def mock_text(client, message):
 	if message.reply_to_message:
 		teks = message.reply_to_message.text
 		if teks == None:
 			teks = message.reply_to_message.caption
 			if teks == None:
 				return
-		pesan = mocking_text(teks)
-		client.edit_message_text(message.chat.id, message.message_id, pesan)
+		pesan = await mocking_text(teks)
+		await client.edit_message_text(message.chat.id, message.message_id, pesan)
 
 @app.on_message(Filters.user("self") & Filters.command(["1", "1a"], Command))
-def marquee(client, message):
+async def marquee(client, message):
 	teks = message.text[3:] + " "
 	jumlah = teks.count('') - 1
 	if message.text[:3] == ".1a":
@@ -162,12 +162,12 @@ def marquee(client, message):
 		else:
 			teks = teks[-1] + teks[:-1]
 		try:
-			client.edit_message_text(message.chat.id, message.message_id, teks, parse_mode="")
+			await client.edit_message_text(message.chat.id, message.message_id, teks, parse_mode="")
 		except:
 			pass
 
 @app.on_message(Filters.user("self") & Filters.command(["2"], Command))
-def dancedance(client, message):
+async def dancedance(client, message):
 	teks = list(message.text[3:])
 	for loop in range(4):
 		for i, ele in enumerate(teks):
@@ -176,7 +176,7 @@ def dancedance(client, message):
 		pesan = ""
 		for x in range(len(teks)):
 			pesan += teks[x]
-		client.edit_message_text(message.chat.id, message.message_id, pesan)
+		await client.edit_message_text(message.chat.id, message.message_id, pesan)
 		teks = list(message.text[3:])
 		for i, ele in enumerate(teks):
 			if i % 2 == 0:
@@ -184,23 +184,23 @@ def dancedance(client, message):
 		pesan = ""
 		for x in range(len(teks)):
 			pesan += teks[x]
-		client.edit_message_text(message.chat.id, message.message_id, pesan)
+		await client.edit_message_text(message.chat.id, message.message_id, pesan)
 		teks = list(message.text[3:])
 	teks = message.text[3:]
-	client.edit_message_text(message.chat.id, message.message_id, teks.capitalize())
+	await client.edit_message_text(message.chat.id, message.message_id, teks.capitalize())
 
 @app.on_message(Filters.user("self") & Filters.command(["3"], Command))
-def typingmeme(client, message):
+async def typingmeme(client, message):
 	teks = message.text[3:]
 	total = len(teks)
 	for loop in range(total):
 		try:
-			message.edit(teks[:loop+1])
+			await message.edit(teks[:loop+1])
 		except:
 			pass
 
 @app.on_message(Filters.user("self") & Filters.command(["meme"], Command))
-def meme_gen(client, message):
+async def meme_gen(client, message):
 	MEME_TYPES = requests.get("https://raw.githubusercontent.com/AyraHikari/Nana-TgBot/master/nana/helpers/memes.json").json()
 	if len(message.text.split()) <= 2:
 		if len(message.text.split()) == 2:
@@ -208,15 +208,15 @@ def meme_gen(client, message):
 			text = "Search result:\n"
 			for x in closematch:
 				text += "\n`{}`\n-> **{}**\n-> [Example]({})\n".format(x, MEME_TYPES[x]['title'], MEME_TYPES[x]['example'])
-			message.edit(text)
+			await message.edit(text)
 		else:
-			message.edit("Avaiable type: `{}`".format("`, `".join(list(MEME_TYPES))))
+			await message.edit("Avaiable type: `{}`".format("`, `".join(list(MEME_TYPES))))
 		return
 	memetype = message.text.split(None, 2)[1]
 	if memetype not in list(MEME_TYPES):
-		message.edit("Unknown type!")
+		await message.edit("Unknown type!")
 		return
-	message.delete()
+	await message.delete()
 	sptext = message.text.split(None, 2)[2].split("\n")
 	if len(sptext) == 1:
 		text1 = "_"
@@ -230,14 +230,14 @@ def meme_gen(client, message):
 			getimg.raw.decode_content = True
 			shutil.copyfileobj(getimg.raw, f)
 		if message.reply_to_message:
-			client.send_sticker(message.chat.id, "nana/cache/meme.png", reply_to_message_id=message.reply_to_message.message_id)
+			await client.send_sticker(message.chat.id, "nana/cache/meme.png", reply_to_message_id=message.reply_to_message.message_id)
 		else:
-			client.send_sticker(message.chat.id, "nana/cache/meme.png", reply_to_message_id=message.message_id)
+			await client.send_sticker(message.chat.id, "nana/cache/meme.png", reply_to_message_id=message.message_id)
 		os.remove("nana/cache/meme.png")
 
 
 # Aeshetic
-def vaporize(vape_me):
+async def vaporize(vape_me):
 	"""Solution shamelessly stolen from http://stackoverflow.com/a/8327034
 	by Ignacio Vazquez-Abrams"""
 	normal = u' 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~'
@@ -247,7 +247,7 @@ def vaporize(vape_me):
 	return vaped
 
 @app.on_message(Filters.user("self") & Filters.command(["aes"], Command))
-def aeshetic(client, message):
+async def aeshetic(client, message):
 	teks = message.text.split(None, 1)[1]
-	reply = vaporize(teks)
-	message.edit(reply)
+	reply = await vaporize(teks)
+	await message.edit(reply)

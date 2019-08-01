@@ -5,9 +5,9 @@ from pyrogram import Filters
 
 
 @app.on_message(Filters.user(Owner) & Filters.command(["ping"], Command))
-def ping(client, message):
+async def ping(client, message):
 	start_time = time.time()
-	message.edit("🏓 Pong!")
+	await message.edit("🏓 Pong!")
 	end_time = time.time()
 	ping_time = float(end_time - start_time)
-	message.edit("🏓 Pong!\n⏱ Speed was : {0:.2f}s".format(round(ping_time, 2) % 60))
+	await message.edit("🏓 Pong!\n⏱ Speed was : {0:.2f}s".format(round(ping_time, 2) % 60))

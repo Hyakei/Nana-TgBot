@@ -20,7 +20,7 @@ Reply a document to download it.
 """
 
 
-def time_parser(start, end):
+async def time_parser(start, end):
 	time_end = end - start
 	month = time_end // 2678400
 	days = time_end // 86400
@@ -44,13 +44,13 @@ def time_parser(start, end):
 
 	return times
 
-def download_url(url, file_name):
+async def download_url(url, file_name):
 	start = int(time.time())
 	downloader = Downloader(url=url)
 	end = int(time.time())
-	times = time_parser(start, end)
+	times = await time_parser(start, end)
 	downlaoded = f"⬇️ Downloaded `{file_name}` in {times}"
-	downlaoded += "\n🗂 File name: {}".format(downloader.file_name)
+	downlaoded += "\n🗂 File name: {}".format(file_name)
 	size = os.path.getsize(downloader.file_name)
 	if size > 1024000000:
 		file_size = round(size / 1024000000, 3)
@@ -65,13 +65,16 @@ def download_url(url, file_name):
 		file_size = round(size, 3)
 		downlaoded += "\n💿 File size: `" + str(file_size) + " Byte`\n"
 
-	os.rename(downloader.file_name, OutputDownload + file_name)
+	try:
+		os.rename(downloader.file_name, OutputDownload + file_name)
+	except OSError:
+		return "Failed to download file\nInvaild file name!"
 	return downlaoded
 
 @app.on_message(Filters.user("self") & Filters.command(["dl"], Command))
-def download_from_url(client, message):
+async def download_from_url(client, message):
 	if len(message.text.split()) == 1:
-		message.edit("Usage: `dl <url> <filename>`")
+		await message.edit("Usage: `dl <url> <filename>`")
 		return
 	if len(message.text.split()) == 2:
 		URL = message.text.split(None, 1)[1]
@@ -80,50 +83,50 @@ def download_from_url(client, message):
 		URL = message.text.split(None, 2)[1]
 		file_name = message.text.split(None, 2)[2]
 	else:
-		message.edit("Invaild args given!")
+		await message.edit("Invaild args given!")
 		return
 	try:
 		os.listdir(OutputDownload)
 	except FileNotFoundError:
-		message.edit("Invalid download path in config!")
+		await message.edit("Invalid download path in config!")
 		return
-	message.edit("Downloading...")
-	download = download_url(URL, file_name)
-	message.edit(download)
+	await message.edit("Downloading...")
+	download = await download_url(URL, file_name)
+	await message.edit(download)
 
 
 @app.on_message(Filters.user("self") & Filters.command(["download"], Command))
-def download_from_telegram(client, message):
+async def download_from_telegram(client, message):
 	if message.reply_to_message:
-		message.edit("__Downloading...__")
+		await message.edit("__Downloading...__")
 		start = int(time.time())
 		if message.reply_to_message.photo:
-			nama = "photo_{}_{}.png".format(message.reply_to_message.photo.id, message.reply_to_message.photo.date)
-			client.download_media(message.reply_to_message.photo.file_id, file_name=OutputDownload + nama)
+			nama = "photo_{}_{}.png".format(message.reply_to_message.photo.file_id, message.reply_to_message.photo.date)
+			await client.download_media(message.reply_to_message.photo.file_id, file_name=OutputDownload + nama)
 		elif message.reply_to_message.animation:
 			nama = "giphy_{}-{}.gif".format(message.reply_to_message.animation.date, message.reply_to_message.animation.file_size)
-			client.download_media(message.reply_to_message.animation.file_id, file_name=OutputDownload + nama)
+			await client.download_media(message.reply_to_message.animation.file_id, file_name=OutputDownload + nama)
 		elif message.reply_to_message.video:
 			nama = "video_{}-{}.mp4".format(message.reply_to_message.video.date, message.reply_to_message.video.file_size)
-			client.download_media(message.reply_to_message.video.file_id, file_name=OutputDownload + nama)
+			await client.download_media(message.reply_to_message.video.file_id, file_name=OutputDownload + nama)
 		elif message.reply_to_message.sticker:
 			nama = "sticker_{}_{}.webp".format(message.reply_to_message.sticker.date, message.reply_to_message.sticker.set_name)
-			client.download_media(message.reply_to_message.sticker.file_id, file_name=OutputDownload + nama)
+			await client.download_media(message.reply_to_message.sticker.file_id, file_name=OutputDownload + nama)
 		elif message.reply_to_message.audio:
 			nama = "{}".format(message.reply_to_message.audio.file_name)
-			client.download_media(message.reply_to_message.audio.file_id, file_name=OutputDownload + nama)
+			await client.download_media(message.reply_to_message.audio.file_id, file_name=OutputDownload + nama)
 		elif message.reply_to_message.voice:
 			nama = "audio_{}.ogg".format(message.reply_to_message.voice.file_id)
-			client.download_media(message.reply_to_message.voice.file_id, file_name=OutputDownload + nama)
+			await client.download_media(message.reply_to_message.voice.file_id, file_name=OutputDownload + nama)
 		elif message.reply_to_message.document:
 			nama = "{}".format(message.reply_to_message.document.file_name)
-			client.download_media(message.reply_to_message.document.file_id, file_name=OutputDownload + nama)
+			await client.download_media(message.reply_to_message.document.file_id, file_name=OutputDownload + nama)
 		else:
-			message.edit("Unknown file!")
+			await message.edit("Unknown file!")
 			return
 		end = int(time.time())
-		times = time_parser(start, end)
+		times = await time_parser(start, end)
 		text = f"**⬇ Downloaded!**\n🗂 File name: `{nama}`\n🏷 Saved to: `{OutputDownload}`\n⏲ Downloaded in: {times}"
-		message.edit(text)
+		await message.edit(text)
 	else:
-		message.edit("Reply document to download it")
+		await message.edit("Reply document to download it")

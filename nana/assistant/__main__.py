@@ -4,16 +4,16 @@ from bs4 import BeautifulSoup
 from platform import python_version, uname
 
 from nana import app, setbot, Owner, AdminSettings, DB_AVAIABLE, USERBOT_VERSION, ASSISTANT_VERSION
-from __main__ import reload_userbot
+from __main__ import reload_userbot, restart_all
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton, errors
 
 from threading import Thread
 
 
 @setbot.on_message(Filters.user(AdminSettings) & Filters.command(["start"]))
-def start(client, message):
+async def start(client, message):
 	try:
-		me = app.get_me()
+		me = await app.get_me()
 	except ConnectionError:
 		me = None
 	text = "Hello {}!\n".format(message.from_user.first_name)
@@ -29,16 +29,16 @@ def start(client, message):
 		text += "\nBot is currently turned off, to start bot again, type /settings and click **Start Bot** button"
 	else:
 		text += "\nBot logged in as `{}`\nTo get more information about this user, type /getme\n".format(me.first_name)
-	message.reply(text)
+	await message.reply(text)
 
 @setbot.on_message(Filters.user(AdminSettings) & Filters.command(["getme"]))
-def get_myself(client, message):
+async def get_myself(client, message):
 	try:
-		me = app.get_me()
+		me = await app.get_me()
 	except ConnectionError:
 		message.reply("Bot is currently turned off!")
 		return
-	getphoto = client.get_profile_photos(me.id)
+	getphoto = await client.get_profile_photos(me.id)
 	if len(getphoto) == 0:
 		getpp = None
 	else:
@@ -55,15 +55,15 @@ def get_myself(client, message):
 	text += "`Manager Version : v{}`".format(ASSISTANT_VERSION)
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]])
 	if me.photo:
-		client.send_photo(message.chat.id, photo=getpp, caption=text, reply_markup=button)
+		await client.send_photo(message.chat.id, photo=getpp, caption=text, reply_markup=button)
 	else:
-		message.reply(text, reply_markup=button)
+		await message.reply(text, reply_markup=button)
 
 
 @setbot.on_message(Filters.user(AdminSettings) & Filters.command(["settings"]))
-def settings(client, message):
+async def settings(client, message):
 	try:
-		me = app.get_me()
+		me = await app.get_me()
 	except ConnectionError:
 		me = None
 	text = "**⚙️ Welcome to Nana Settings!**\n"
@@ -79,8 +79,8 @@ def settings(client, message):
 		togglestart = "Start Bot"
 	else:
 		togglestart = "Stop Bot"
-	button = InlineKeyboardMarkup([[InlineKeyboardButton(togglestart, callback_data="toggle_startbot")]])
-	message.reply(text, reply_markup=button)
+	button = InlineKeyboardMarkup([[InlineKeyboardButton(togglestart, callback_data="toggle_startbot"), InlineKeyboardButton("Restart Bot", callback_data="restart_bot")]])
+	await message.reply(text, reply_markup=button)
 
 
 # For callback query button
@@ -91,11 +91,11 @@ def dynamic_data_filter(data):
 	)
 
 @setbot.on_callback_query(dynamic_data_filter("hide_number"))
-def get_myself_btn(client, query):
+async def get_myself_btn(client, query):
 	try:
-		me = app.get_me()
+		me = await app.get_me()
 	except ConnectionError:
-		client.answer_callback_query(query.id, "Bot is currently turned off!", show_alert=True)
+		await client.answer_callback_query(query.id, "Bot is currently turned off!", show_alert=True)
 		return
 
 	if query.message.caption:
@@ -114,50 +114,67 @@ def get_myself_btn(client, query):
 		button = InlineKeyboardMarkup([[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]])
 
 	if query.message.caption:
-		query.message.edit_caption(caption=text, reply_markup=button)
+		await query.message.edit_caption(caption=text, reply_markup=button)
 	else:
-		query.message.edit(text, reply_markup=button)
+		await query.message.edit(text, reply_markup=button)
 
 @setbot.on_callback_query(dynamic_data_filter("toggle_startbot"))
-def start_stop_bot(client, query):
+async def start_stop_bot(client, query):
 	try:
-		me = app.get_me()
+		me = await app.get_me()
 	except ConnectionError:
-		reload_userbot()
+		await app.stop()
+		await reload_userbot()
 		text = "**⚙️ Welcome to Nana Settings!**\n"
 		text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
 		text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
 		text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 		text += "-> Python: `{}`\n".format(python_version())
 		text += "\n✅ Bot was started!"
-		button = InlineKeyboardMarkup([[InlineKeyboardButton("Stop Bot", callback_data="toggle_startbot")]])
+		button = InlineKeyboardMarkup([[InlineKeyboardButton("Stop Bot", callback_data="toggle_startbot"), InlineKeyboardButton("Restart Bot", callback_data="restart_bot")]])
 		try:
-			query.message.edit_text(text, reply_markup=button)
+			await query.message.edit_text(text, reply_markup=button)
 		except errors.exceptions.bad_request_400.MessageNotModified:
 			pass
-		client.answer_callback_query(query.id, "Bot was started!")
+		await client.answer_callback_query(query.id, "Bot was started!")
 		return
-	app.stop()
+	await app.stop()
 	text = "**⚙️ Welcome to Nana Settings!**\n"
 	text += "-> Userbot: `Stopped (v{})`\n".format(USERBOT_VERSION)
 	text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
 	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
 	text += "-> Python: `{}`\n".format(python_version())
 	text += "\n❎ Bot was stopped!"
-	button = InlineKeyboardMarkup([[InlineKeyboardButton("Start Bot", callback_data="toggle_startbot")]])
+	button = InlineKeyboardMarkup([[InlineKeyboardButton("Start Bot", callback_data="toggle_startbot"), InlineKeyboardButton("Restart Bot", callback_data="restart_bot")]])
 	try:
-		query.message.edit_text(text, reply_markup=button)
+		await query.message.edit_text(text, reply_markup=button)
 	except errors.exceptions.bad_request_400.MessageNotModified:
 		pass
-	client.answer_callback_query(query.id, "Bot was stopped!")
+	await client.answer_callback_query(query.id, "Bot was stopped!")
 
 
 @setbot.on_callback_query(dynamic_data_filter("report_errors"))
-def report_some_errors(client, query):
+async def report_some_errors(client, query):
 	text = "Hi @AyraHikari, i got an error for you.\nPlease take a look and fix it if possible.\n\nThank you ❤️"
 	err = query.message.text
 	open("nana/cache/errors.txt", "w").write(err)
-	query.message.edit_reply_markup(reply_markup=None)
-	app.send_document("AyraSupport", "nana/cache/errors.txt", caption=text)
+	await query.message.edit_reply_markup(reply_markup=None)
+	await app.send_document("AyraSupport", "nana/cache/errors.txt", caption=text)
 	os.remove("nana/cache/errors.txt")
-	client.answer_callback_query(query.id, "Report was sent!")
+	await client.answer_callback_query(query.id, "Report was sent!")
+
+@setbot.on_callback_query(dynamic_data_filter("restart_bot"))
+async def reboot_bot(client, query):
+	await restart_all()
+	text = "**⚙️ Welcome to Nana Settings!**\n"
+	text += "-> Userbot: `Running (v{})`\n".format(USERBOT_VERSION)
+	text += "-> Assistant: `Running (v{})`\n".format(ASSISTANT_VERSION)
+	text += "-> Database: `{}`\n".format(DB_AVAIABLE)
+	text += "-> Python: `{}`\n".format(python_version())
+	text += "\n✅ Bot was restarted!"
+	button = InlineKeyboardMarkup([[InlineKeyboardButton("Stop Bot", callback_data="toggle_startbot"), InlineKeyboardButton("Restart Bot", callback_data="restart_bot")]])
+	try:
+		await query.message.edit_text(text, reply_markup=button)
+	except errors.exceptions.bad_request_400.MessageNotModified:
+		pass
+	await client.answer_callback_query(query.id, "Please wait for bot restarting...")
