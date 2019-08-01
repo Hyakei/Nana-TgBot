@@ -20,7 +20,7 @@ def get_msgc():
 	return MESSAGE_RECOUNTER
 
 @app.on_message(Filters.group, group=10)
-def UpdateMyChats(client, message):
+async def UpdateMyChats(client, message):
 	global MESSAGE_RECOUNTER
 	if DB_AVAIABLE:
 		update_chat(message.chat)
@@ -28,9 +28,9 @@ def UpdateMyChats(client, message):
 
 
 @app.on_message(Filters.user("self") & Filters.command(["chatlist"], Command))
-def get_chat(client, message):
+async def get_chat(client, message):
 	if not DB_AVAIABLE:
-		message.edit("Your database is not avaiable!")
+		await message.edit("Your database is not avaiable!")
 		return
 	all_chats = get_all_chats()
 	chatfile = 'List of chats that I joined.\n'
@@ -40,10 +40,10 @@ def get_chat(client, message):
 		else:
 			chatfile += "{} - ({})\n".format(chat.chat_name, chat.chat_id)
 
-	with open("nana/cache/chatlist.txt", "w") as writing:
+	with open("nana/cache/chatlist.txt", "w", encoding="utf-8") as writing:
 		writing.write(str(chatfile))
 		writing.close()
 
-	client.send_document("self", document="chatlist.txt", caption="Here is the chat list that I joined.")
-	message.edit("My chat list exported to my saved messages.")
+	await client.send_document("self", document="nana/cache/chatlist.txt", caption="Here is the chat list that I joined.")
+	await message.edit("My chat list exported to my saved messages.")
 	os.remove("nana/cache/chatlist.txt")

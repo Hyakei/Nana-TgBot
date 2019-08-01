@@ -1,5 +1,5 @@
 requests
-git+https://github.com/AyraHikari/pyrogram
+git+https://github.com/AyraHikari/pyrogram#egg=asyncio
 TgCrypto
 pydrive
 sqlalchemy

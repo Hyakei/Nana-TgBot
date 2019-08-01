@@ -8,9 +8,9 @@ from nana.modules.database.chats_db import get_all_chats
 
 
 @setbot.on_message(Filters.user(AdminSettings) & Filters.command(["stats"]))
-def stats(client, message):
+async def stats(client, message):
 	try:
-		me = app.get_me()
+		me = await app.get_me()
 	except ConnectionError:
 		me = None
 	text = "**Here is your current stats**\n"
@@ -18,7 +18,7 @@ def stats(client, message):
 	text += "Group joined: `{} groups`\n".format(len(get_all_chats()))
 	text += "Message received: `{} messages`\n".format(get_msgc())
 
-	a = get_runtime()
+	a = await get_runtime()
 	b = int(time.time())
 	c = b - a
 	month = c // 2678400
@@ -40,5 +40,5 @@ def stats(client, message):
 		alivetext += "{} seconds".format(seconds)
 
 	text += "\nBot was alive for `{}`".format(alivetext)
-	message.reply(text)
+	await message.reply(text)
 

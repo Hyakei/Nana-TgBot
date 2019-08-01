@@ -34,10 +34,10 @@ Powered by @YTAudioBot, because no need extra bandwith in your client :p
 """
 
 @app.on_message(Filters.user("self") & Filters.command(["youtube", "yt"], Command))
-def youtube_search(client, message):
+async def youtube_search(client, message):
 	args = message.text.split(None, 1)
 	if len(args) == 1:
-		message.edit("Write any args here!")
+		await message.edit("Write any args here!")
 		return
 	teks = args[1]
 	responce = requests.get('https://www.youtube.com/results?search_query=' + teks.replace(" ", "%20"))
@@ -55,16 +55,16 @@ def youtube_search(client, message):
 			vidtime = ""
 		nomor += 1
 		yutub += '<b>{}.</b> <a href="{}">{}</a> {}\n'.format(nomor, "https://www.youtube.com" + url, title, vidtime)
-	message.edit(yutub, disable_web_page_preview=True, parse_mode="html")
+	await message.edit(yutub, disable_web_page_preview=True, parse_mode="html")
 
 @app.on_message(Filters.user("self") & Filters.command(["ytdl"], Command))
-def youtube_downloader(client, message):
+async def youtube_downloader(client, message):
 	args = message.text.split(None, 1)
 	if len(args) == 1:
-		message.edit("Write any args here!")
+		await message.edit("Write any args here!")
 		return
 	teks = args[1]
-	message.edit("Checking...")
+	await message.edit("Checking...")
 	if "youtu.be" in teks:
 		ytid = teks.split("youtu.be/")[1]
 		if "&" in ytid:
@@ -74,7 +74,7 @@ def youtube_downloader(client, message):
 		if "&" in ytid:
 			ytid = ytid.split("&")[0]
 	else:
-		message.edit("URL not supported!")
+		await message.edit("URL not supported!")
 		return
 	yt = requests.get("https://api.unblockvideos.com/youtube_downloader?id={}&selector=mp4".format(ytid)).json()
 	thumb = "https://i1.ytimg.com/vi/{}/mqdefault.jpg".format(ytid)
@@ -83,44 +83,44 @@ def youtube_downloader(client, message):
 	for x in yt:
 		capt += "\n-> [{}]({})".format(x['format'], x['url'])
 	try:
-		client.send_photo(message.chat.id, photo=thumb, caption=capt, reply_to_message_id=message.message_id, parse_mode='markdown')
+		await client.send_photo(message.chat.id, photo=thumb, caption=capt, reply_to_message_id=message.message_id, parse_mode='markdown')
 	except:
-		message.edit(capt + "[⁣]({})".format(thumb), disable_web_page_preview=True)
+		await message.edit(capt + "[⁣]({})".format(thumb), disable_web_page_preview=True)
 
 
 @app.on_message(Filters.user("self") & Filters.command(["ytmusic", "ytaudio"], Command))
-def youtube_music(client, message):
+async def youtube_music(client, message):
 	args = message.text.split(None, 1)
 	if len(args) == 1:
-		message.edit("Write any args here!")
+		await message.edit("Write any args here!")
 		return
 	teks = args[1]
 	balasan = "\n\nMendownload..."
-	message.edit(teks+balasan, disable_web_page_preview=True)
-	client.send_message("@YTAudioBot", teks)
+	await message.edit(teks+balasan, disable_web_page_preview=True)
+	await client.send_message("@YTAudioBot", teks)
 	time.sleep(1)
 	num = 0
 	rusakin = False
 	while True:
 		num += 1
-		client.send_chat_action(message.chat.id, action="cancel")
+		await client.send_chat_action(message.chat.id, action="cancel")
 		dialog = client.get_dialogs(limit=10)
 		for x in dialog:
 			if x['chat']['username'] == "YTAudioBot":
 				if x['top_message']['reply_markup']:
 					print("Done!")
-					client.request_callback_answer("@YTAudioBot", message_id=int(x['top_message']['message_id']), callback_data=x['top_message']['reply_markup']['inline_keyboard'][0][-1]['callback_data'])
+					await client.request_callback_answer("@YTAudioBot", message_id=int(x['top_message']['message_id']), callback_data=x['top_message']['reply_markup']['inline_keyboard'][0][-1]['callback_data'])
 					rusakin = True
 		if rusakin == True:
 			break
 		time.sleep(1)
 		if num >= 5:
-			message.edit("Can't download it!\nMaintenance maybe?")
+			await message.edit("Can't download it!\nMaintenance maybe?")
 			return
 	rusakin = False
 	while True:
 		num += 1
-		dialog = client.get_dialogs(limit=10)
+		dialog = await client.get_dialogs(limit=10)
 		for x in dialog:
 			if x['chat']['username'] == "YTAudioBot":
 				if x['top_message']['audio']:
@@ -136,7 +136,7 @@ def youtube_music(client, message):
 			break
 		time.sleep(1)
 		if num >= 8:
-			message.edit("Can't download it!\nMaintenance maybe?")
+			await message.edit("Can't download it!\nMaintenance maybe?")
 			return
-	message.delete()
+	await message.delete()
 

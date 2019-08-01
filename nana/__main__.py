@@ -5,6 +5,7 @@ import random
 import sys
 import traceback
 import threading
+import asyncio
 
 import pyrogram
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton
@@ -18,20 +19,21 @@ RUNTIME = 0
 HELP_COMMANDS = {}
 
 
-def get_runtime():
+loop = asyncio.get_event_loop()
+
+async def get_runtime():
 	return RUNTIME
 
-def reload_userbot():
-	app.start()
+async def reload_userbot():
+	await app.start()
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
 		importlib.reload(imported_module)
 
-def shutdown():
+async def reboot():
 	global RUNTIME, HELP_COMMANDS
-	setbot.send_message(Owner, "Bot is restarting...")
-	setbot.restart()
-	app.restart()
+	# await setbot.send_message(Owner, "Bot is restarting...")
+	await setbot.restart()
 	# Reset global var
 	RUNTIME = 0
 	HELP_COMMANDS = {}
@@ -52,34 +54,33 @@ def shutdown():
 		if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
 			HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
 		importlib.reload(imported_module)
-	setbot.send_message(Owner, "Restart successfully!")
+	await setbot.send_message(Owner, "Restart successfully!")
 
-def restart_all():
+async def restart_all():
 	# Restarting and load all plugins
-	threading.Thread(target=shutdown).start()
+	asyncio.get_event_loop().create_task(reboot())
 
 RANDOM_STICKERS = ["CAADAgAD6EoAAuCjggf4LTFlHEcvNAI", "CAADAgADf1AAAuCjggfqE-GQnopqyAI", "CAADAgADaV0AAuCjggfi51NV8GUiRwI"]
 
 
-def except_hook(errtype, value, tback):
+async def except_hook(errtype, value, tback):
 	sys.__excepthook__(errtype, value, tback)
 	errors = traceback.format_exception(etype=errtype, value=value, tb=tback)
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("🐞 Report bugs", callback_data="report_errors")]])
 	text = "An error has accured!\n\n```{}```\n".format("".join(errors))
 	if errtype == ModuleNotFoundError:
 		text += "\nHint: Try this in your terminal `pip install -r requirements.txt`"
-	setbot.send_message(app.get_me().id, text, reply_markup=button)
-
-sys.excepthook = except_hook
+	await setbot.send_message(Owner, text, reply_markup=button)
 
 
-if __name__ == '__main__':
+async def start_bot():
+	sys.excepthook = except_hook
 	# Assistant bot
-	setbot.start()
+	await setbot.start()
 	for setting in ALL_SETTINGS:
 		imported_module = importlib.import_module("nana.assistant." + setting)
 	# Nana userbot
-	app.start()
+	await app.start()
 	for modul in ALL_MODULES:
 		imported_module = importlib.import_module("nana.modules." + modul)
 		if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
@@ -97,4 +98,8 @@ if __name__ == '__main__':
 	log.info("Assistant modules: " + str(ALL_SETTINGS))
 	log.info("-----------------------")
 	log.info("Bot run successfully!")
+	await setbot.idle()
+
+if __name__ == '__main__':
 	RUNTIME = int(time.time())
+	loop.run_until_complete(start_bot())

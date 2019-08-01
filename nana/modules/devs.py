@@ -1,4 +1,4 @@
-import json
+import asyncio
 import requests
 import datetime
 import os
@@ -39,72 +39,80 @@ Get user specific data center
 """
 
 
-def stk(chat, photo):
+async def stk(chat, photo):
 	if "http" in photo:
 		r = requests.get(photo, stream=True)
 		with open("nana/cache/stiker.png", "wb") as stk:
 			shutil.copyfileobj(r.raw, stk)
-		app.send_sticker(chat, "nana/cache/stiker.png")
+		await app.send_sticker(chat, "nana/cache/stiker.png")
 		os.remove("nana/cache/stiker.png")
 	else:
-		app.send_sticker(chat, photo)
+		await app.send_sticker(chat, photo)
 
-def vid(chat, video, caption=None):
-	app.send_video(chat, video, caption)
+async def vid(chat, video, caption=None):
+	await app.send_video(chat, video, caption)
 
-def pic(chat, photo, caption=None):
-	app.send_photo(chat, photo, caption)
+async def pic(chat, photo, caption=None):
+	await app.send_photo(chat, photo, caption)
 
+async def aexec(client, message, code):
+	# Make an async function with the code and `exec` it
+	exec(
+		f'async def __ex(client, message): ' +
+		''.join(f'\n {l}' for l in code.split('\n'))
+	)
+
+	# Get `__ex` from local variables, call it and return the result
+	return await locals()['__ex'](client, message)
 
 @app.on_message(Filters.user("self") & Filters.command(["exec"], Command))
-def executor(c, m):
-	if len(m.text.split()) == 1:
-		message.edit("Usage: `exec m.edit('edited!')`")
+async def executor(client, message):
+	if len(message.text.split()) == 1:
+		await message.edit("Usage: `exec message.edit('edited!')`")
 		return
-	args = m.text.split(None, 1)
+	args = message.text.split(None, 1)
 	code = args[1]
-	chat = m.chat.id
 	try:
-		exec(code)
+		await aexec(client, message, code)
 	except:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
-		m.edit("**Execute**\n`{}`\n\n**Failed:**\n```{}```".format(code, errors[-1]))
+		await message.edit("**Execute**\n`{}`\n\n**Failed:**\n```{}```".format(code, errors[-1]))
 		logging.exception("Execution error")
 
 @app.on_message(Filters.user("self") & Filters.command(["eval"], Command))
-def evaluation(client, message):
-	if len(m.text.split()) == 1:
-		message.edit("Usage: `eval 1000-7`")
+async def evaluation(client, message):
+	if len(message.text.split()) == 1:
+		await message.edit("Usage: `eval 1000-7`")
 		return
 	q = message.text.split(None, 1)[1]
 	try:
 		ev = str(eval(q))
 		if ev:
 			if len(ev) >= 4096:
-				file = open("output.txt", "w+")
+				file = open("nana/cache/output.txt", "w+")
 				file.write(ev)
 				file.close()
-				client.send_file(message.chat.id, "output.txt", caption="`Output too large, sending as file`")
-				remove("output.txt")
+				await client.send_file(message.chat.id, "nana/cache/output.txt", caption="`Output too large, sending as file`")
+				os.remove("nana/cache/output.txt")
 				return
 			else:
-				message.edit("**Query:**\n{}\n\n**Result:**\n`{}`".format(q, ev))
+				await message.edit("**Query:**\n{}\n\n**Result:**\n`{}`".format(q, ev))
 				return
 		else:
-			message.edit("**Query:**\n{}\n\n**Result:**\n`None`".format(q))
+			await message.edit("**Query:**\n{}\n\n**Result:**\n`None`".format(q))
 			return
 	except:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
-		m.edit("Error: `{}`".format(code, errors[-1]))
+		await message.edit("Error: `{}`".format(code, errors[-1]))
 		logging.exception("Evaluation error")
 
 
 @app.on_message(Filters.user("self") & Filters.command(["cmd"], Command))
-def terminal(client, message):
+async def terminal(client, message):
 	if len(message.text.split()) == 1:
-		message.edit("Usage: `cmd ping -c 5 google.com`")
+		await message.edit("Usage: `cmd ping -c 5 google.com`")
 		return
 	args = message.text.split(None, 1)
 	teks = args[1]
@@ -120,7 +128,7 @@ def terminal(client, message):
 					stderr=subprocess.PIPE
 				)
 			except Exception as err: 
-				message.edit("""
+				await message.edit("""
 **Input:**
 ```{}```
 
@@ -143,7 +151,7 @@ def terminal(client, message):
 		except Exception as err:
 			exc_type, exc_obj, exc_tb = sys.exc_info()
 			errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
-			message.edit("""**Input:**\n```{}```\n\n**Error:**\n```{}```""".format(teks, errors[-1]))
+			await message.edit("""**Input:**\n```{}```\n\n**Error:**\n```{}```""".format(teks, errors[-1]))
 			return
 		output = process.stdout.read()[:-1].decode("utf-8")
 	if str(output) == "\n":
@@ -153,34 +161,34 @@ def terminal(client, message):
 			file = open("nana/cache/output.txt", "w+")
 			file.write(output)
 			file.close()
-			client.send_document(message.chat.id, "nana/cache/output.txt", reply_to_message_id=message.message_id, caption="`Output file`")
+			await client.send_document(message.chat.id, "nana/cache/output.txt", reply_to_message_id=message.message_id, caption="`Output file`")
 			os.remove("nana/cache/output.txt")
 			return
-		message.edit("""**Input:**\n```{}```\n\n**Output:**\n```{}```""".format(teks, output))
+		await message.edit("""**Input:**\n```{}```\n\n**Output:**\n```{}```""".format(teks, output))
 	else:
-		message.edit("**Input: **\n`{}`\n\n**Output: **\n`No Output`".format(teks))
+		await message.edit("**Input: **\n`{}`\n\n**Output: **\n`No Output`".format(teks))
 
 @app.on_message(Filters.user("self") & Filters.command(["log"], Command))
-def log(client, message):
+async def log(client, message):
 	try:
-		message.edit(str(message), parse_mode="")
+		await message.edit(str(message), parse_mode="")
 	except:
 		data = deldog(str(message))
-		message.edit(data)
+		await message.edit(data)
 
 @app.on_message(Filters.user("self") & Filters.command(["dc"], Command))
-def dc_id(client, message):
+async def dc_id(client, message):
 	chat = message.chat
 	user = message.from_user
 	if message.reply_to_message:
 		if message.reply_to_message.forward_from:
-			dc_id = client.get_user_dc(message.reply_to_message.forward_from.id)
+			dc_id = await client.get_user_dc(message.reply_to_message.forward_from.id)
 			user = mention_markdown(message.reply_to_message.forward_from.id, message.reply_to_message.forward_from.first_name)
 		else:
-			dc_id = client.get_user_dc(message.reply_to_message.from_user.id)
+			dc_id = await client.get_user_dc(message.reply_to_message.from_user.id)
 			user = mention_markdown(message.reply_to_message.from_user.id, message.reply_to_message.from_user.first_name)
 	else:
-		dc_id = client.get_user_dc(message.from_user.id)
+		dc_id = await client.get_user_dc(message.from_user.id)
 		user = mention_markdown(message.from_user.id, message.from_user.first_name)
 	if dc_id == 1:
 		text = "{}'s assigned datacenter is **DC1**, located in **MIA, Miami FL, USA**".format(user)
@@ -194,4 +202,4 @@ def dc_id(client, message):
 		text = "{}'s assigned datacenter is **DC5**, located in **SIN, Singapore, SG**".format(user)
 	else:
 		text = "{}'s assigned datacenter is **Unknown**".format(user)
-	message.edit(text)
+	await message.edit(text)

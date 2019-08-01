@@ -1,15 +1,13 @@
 import os, time, html, random
+import asyncio
 
-from nana import app, setbot, Owner, AdminSettings, USERBOT_VERSION, ASSISTANT_VERSION, log
+from nana import app, setbot, Owner, AdminSettings, USERBOT_VERSION, ASSISTANT_VERSION, log, OFFICIAL_BRANCH, REPOSITORY, RANDOM_STICKERS
 from __main__ import restart_all
 from pyrogram import Filters, InlineKeyboardMarkup, InlineKeyboardButton, errors
 
 from git import Repo, exc
 
 
-OFFICIAL_BRANCH = ('master', 'dev')
-REPOSITORY = "https://github.com/AyraHikari/Nana-TgBot"
-RANDOM_STICKERS = ["CAADAgAD6EoAAuCjggf4LTFlHEcvNAI", "CAADAgADf1AAAuCjggfqE-GQnopqyAI", "CAADAgADaV0AAuCjggfi51NV8GUiRwI"]
 
 def gen_chlog(repo, diff):
 	changelog = ""
@@ -18,16 +16,16 @@ def gen_chlog(repo, diff):
 		changelog += f'• [{cl.committed_datetime.strftime(d_form)}]: {cl.summary} <{cl.author}>\n'
 	return changelog
 
-def update_changelog(changelog):
-	setbot.send_sticker(Owner, random.choice(RANDOM_STICKERS))
+async def update_changelog(changelog):
+	await setbot.send_sticker(Owner, random.choice(RANDOM_STICKERS))
 	text = "**Update successfully!**\n"
 	text += f"🎉 Welcome to Nana Bot v{USERBOT_VERSION} & Assistant v{ASSISTANT_VERSION}\n"
 	text += "\n──「 **Update changelogs** 」──\n"
 	text += changelog
-	setbot.send_message(Owner, text)
+	await setbot.send_message(Owner, text)
 
 
-def update_checker():
+async def update_checker():
 	try:
 		repo = Repo()
 	except exc.NoSuchPathError as error:
@@ -62,7 +60,7 @@ def update_checker():
 	text = f"**New UPDATE available for [{brname}]!**\n\n"
 	text += f"**CHANGELOG:**\n`{changelog}`"
 	button = InlineKeyboardMarkup([[InlineKeyboardButton("🔄 Update Now!", callback_data="update_now")]])
-	setbot.send_message(Owner, text, reply_markup=button, parse_mode="markdown")
+	await setbot.send_message(Owner, text, reply_markup=button, parse_mode="markdown")
 
 # For callback query button
 def dynamic_data_filter(data):
@@ -72,7 +70,7 @@ def dynamic_data_filter(data):
 	)
 
 @setbot.on_callback_query(dynamic_data_filter("update_now"))
-def update_button(client, query):
+async def update_button(client, query):
 	query.message.edit_text("Updating, please wait...")
 	try:
 		repo = Repo()
@@ -101,11 +99,11 @@ def update_button(client, query):
 
 	try:
 		upstream.pull(brname)
-		query.message.edit_text('Successfully Updated!\nBot is restarting...')
+		await query.message.edit_text('Successfully Updated!\nBot is restarting...')
 	except GitCommandError:
-		upstream.git.reset('--hard')
-		query.message.edit_text('Successfully Updated!\nBot is restarting...')
-	update_changelog(changelog)
-	restart_all()
+		repo.git.reset('--hard')
+		await query.message.edit_text('Successfully Updated!\nBot is restarting...')
+	await update_changelog(changelog)
+	await restart_all()
 
-update_checker()
+asyncio.create_task(update_checker())

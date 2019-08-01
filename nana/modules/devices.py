@@ -28,9 +28,9 @@ Download file from telegram, and mirror it to Google Drive
 DEVICE_LIST = "https://raw.githubusercontent.com/androidtrackers/certified-android-devices/master/devices.json"
 
 @app.on_message(Filters.user("self") & Filters.command(["device"], Command))
-def get_device_info(client, message):
+async def get_device_info(client, message):
 	if len(message.text.split()) == 1:
-		message.edit("Usage: `device (codename)`")
+		await message.edit("Usage: `device (codename)`")
 		return
 	getlist = requests.get(DEVICE_LIST).json()
 	targetdevice = message.text.split()[1]
@@ -39,7 +39,7 @@ def get_device_info(client, message):
 	for x in getlist:
 		if x['device'].lower() == targetdevice:
 			found = True
-			message.edit("Brand: `{}`\nName: `{}`\nDevice: `{}`\nCodename: `{}`".format(x['brand'], x['name'], x['model'], x['device']))
+			await message.edit("Brand: `{}`\nName: `{}`\nDevice: `{}`\nCodename: `{}`".format(x['brand'], x['name'], x['model'], x['device']))
 			break
 	if not found:
-		message.edit("Device {} was not found!".format(targetdevice))
+		await message.edit("Device {} was not found!".format(targetdevice))

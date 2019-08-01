@@ -32,7 +32,7 @@ Download file from telegram, and mirror it to Google Drive
 """
 
 
-def get_drivedir(drive):
+async def get_drivedir(drive):
 	file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
 	for drivefolders in file_list:
 		if drivefolders['title'] == 'Nana Drive':
@@ -40,7 +40,7 @@ def get_drivedir(drive):
 	mkdir = drive.CreateFile({'title': 'Nana Drive', "mimeType": "application/vnd.google-apps.folder"})
 	mkdir.Upload()
 
-def get_driveid(driveid):
+async def get_driveid(driveid):
 	if "http" in driveid or "https" in driveid:
 		drivesplit = driveid.split('drive.google.com')[1]
 		if '/d/' in drivesplit:
@@ -51,28 +51,22 @@ def get_driveid(driveid):
 			return False
 	return driveid
 
-def get_driveinfo(driveid):
-	getdrivename = BeautifulSoup(requests.get('https://drive.google.com/uc?export=download&id={}'.format(driveid), allow_redirects=False).content)
-	filename = getdrivename.find('span', {'class': 'uc-name-size'})
-	if filename == None:
-		filenamesize = None
-		filename = None
-	else:
-		filenamesize = cleanhtml(str(filename))
-		filename = cleanhtml(str(filename.a))
-	return filename, filenamesize
+async def get_driveinfo(driveid):
+	getdrivename = BeautifulSoup(requests.get('https://drive.google.com/file/d/{}/view'.format(driveid), allow_redirects=False).content)
+	filename = cleanhtml(str(getdrivename.find('title'))).split(" - ")[0]
+	return filename
 
 
 @app.on_message(Filters.user("self") & Filters.command(["gdrive"], Command))
-def gdrive_stuff(client, message):
+async def gdrive_stuff(client, message):
 	gauth.LoadCredentialsFile("nana/session/drive")
 	if gauth.credentials is None:
-		message.edit("You are not logged in to your google drive account!\nYour assistant bot may help you to login google drive, check your assistant bot for more information!")
+		await message.edit("You are not logged in to your google drive account!\nYour assistant bot may help you to login google drive, check your assistant bot for more information!")
 		gdriveclient = os.path.isfile("client_secrets.json")
 		if not gdriveclient:
-			setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive 🙂\nI can help you to login.\n\nFirst of all, you need to activate your google drive API\n1. [Go here](https://developers.google.com/drive/api/v3/quickstart/python), click **Enable the drive API**\n2. Login to your google account (skip this if you're already logged in)\n3. After logged in, click **Enable the drive API** again, and click **Download Client Configuration** button, download that.\n4. After downloaded that file, rename `credentials.json` to `client_secrets.json`, and upload to your bot dir (not in nana dir)\n\nAfter that, you can go next guide by type /gdrive")
+			await setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive 🙂\nI can help you to login.\n\nFirst of all, you need to activate your google drive API\n1. [Go here](https://developers.google.com/drive/api/v3/quickstart/python), click **Enable the drive API**\n2. Login to your google account (skip this if you're already logged in)\n3. After logged in, click **Enable the drive API** again, and click **Download Client Configuration** button, download that.\n4. After downloaded that file, rename `credentials.json` to `client_secrets.json`, and upload to your bot dir (not in nana dir)\n\nAfter that, you can go next guide by type /gdrive")
 		else:
-			setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive :)\nI can help you to login.\n\n**To login Google Drive**\n1. `/gdrive` to get login URL\n2. After you're logged in, copy your Token.\n3. `/gdrive (token)` without `(` or `)` to login, and your session will saved to `nana/session/drive`.\n\nDon't share your session to someone, else they will hack your google drive account!")
+			await setbot.send_message(message.from_user.id, "Hello, look like you're not logged in to google drive :)\nI can help you to login.\n\n**To login Google Drive**\n1. `/gdrive` to get login URL\n2. After you're logged in, copy your Token.\n3. `/gdrive (token)` without `(` or `)` to login, and your session will saved to `nana/session/drive`.\n\nDon't share your session to someone, else they will hack your google drive account!")
 		return
 	elif gauth.access_token_expired:
 		# Refresh them if expired
@@ -82,73 +76,76 @@ def gdrive_stuff(client, message):
 		gauth.Authorize()
 
 	drive = GoogleDrive(gauth)
-	drive_dir = get_drivedir(drive)
+	drive_dir = await get_drivedir(drive)
 
 	if len(message.text.split()) == 3 and message.text.split()[1] == "download":
-		message.edit("Downloading...")
-		driveid = get_driveid(message.text.split()[2])
+		await message.edit("Downloading...")
+		driveid = await get_driveid(message.text.split()[2])
 		if not driveid:
-			message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
+			await message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
 			return
-		filename, filenamesize = get_driveinfo(driveid)
+		filename = await get_driveinfo(driveid)
 		if not filename:
-			message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
+			await message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
 			return
-		message.edit("Downloading for `{}`\nPlease wait...".format(filenamesize))
+		await message.edit("Downloading for `{}`\nPlease wait...".format(filename))
 		download = drive.CreateFile({'id': driveid})
 		download.GetContentFile(filename)
-		os.rename(filename, OutputDownload + filename)
-		message.edit("Downloaded!\nFile saved to `{}`".format(OutputDownload + filename))
+		try:
+			os.rename(filename, OutputDownload + filename)
+		except FileExistsError:
+			os.rename(filename, OutputDownload + filename + ".2")
+		await message.edit("Downloaded!\nFile saved to `{}`".format(OutputDownload + filename))
 	elif len(message.text.split()) == 3 and message.text.split()[1] == "upload":
 		filename = message.text.split()[2].split(None, 1)[0]
 		checkfile = os.path.isfile(filename)
 		if not checkfile:
-			message.edit("File `{}` was not found!".format(filename))
+			await message.edit("File `{}` was not found!".format(filename))
 			return
-		message.edit("Uploading `{}`...".format(filename))
+		await message.edit("Uploading `{}`...".format(filename))
 		upload = drive.CreateFile({"parents": [{"kind": "drive#fileLink", "id": drive_dir}], 'title': filename})
 		upload.SetContentFile(filename)
 		upload.Upload()
 		upload.InsertPermission({'type': 'anyone', 'value': 'anyone', 'role': 'reader'})
-		message.edit("Uploaded!\nDownload link: [{}]({})\nDirect download link: [{}]({})".format(filename, upload['alternateLink'], filename, upload['downloadUrl']))
+		await message.edit("Uploaded!\nDownload link: [{}]({})\nDirect download link: [{}]({})".format(filename, upload['alternateLink'], filename, upload['downloadUrl']))
 	elif len(message.text.split()) == 3 and message.text.split()[1] == "mirror":
 		message.edit("Mirroring...")
-		driveid = get_driveid(message.text.split()[2])
+		driveid = await get_driveid(message.text.split()[2])
 		if not driveid:
-			message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
+			await message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
 			return
-		filename, filenamesize = get_driveinfo(driveid)
+		filename = await get_driveinfo(driveid)
 		if not filename:
-			message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
+			await message.edit("Invaild URL!\nIf you think this is bug, please go to your Assistant bot and type `/reportbug`")
 			return
 		mirror = drive.auth.service.files().copy(fileId=driveid, body={"parents": [{"kind": "drive#fileLink", "id": drive_dir}], 'title': filename}).execute()
 		new_permission = {'type': 'anyone', 'value': 'anyone', 'role': 'reader'}
 		drive.auth.service.permissions().insert(fileId=mirror['id'], body=new_permission).execute()
-		message.edit("Done!\nDownload link: [{}]({})\nDirect download link: [{}]({})".format(filename, mirror['alternateLink'], filename, mirror['downloadUrl']))
+		await message.edit("Done!\nDownload link: [{}]({})\nDirect download link: [{}]({})".format(filename, mirror['alternateLink'], filename, mirror['downloadUrl']))
 	elif len(message.text.split()) == 2 and message.text.split()[1] == "tgmirror":
 		if message.reply_to_message:
-			message.edit("__Downloading...__")
+			await message.edit("__Downloading...__")
 			if message.reply_to_message.photo:
-				nama = "photo_{}_{}.png".format(message.reply_to_message.photo.id, message.reply_to_message.photo.date)
-				client.download_media(message.reply_to_message.photo.file_id, file_name=OutputDownload + nama)
+				nama = "photo_{}_{}.png".format(message.reply_to_message.photo.file_id, message.reply_to_message.photo.date)
+				await client.download_media(message.reply_to_message.photo.file_id, file_name=OutputDownload + nama)
 			elif message.reply_to_message.animation:
 				nama = "giphy_{}-{}.gif".format(message.reply_to_message.animation.date, message.reply_to_message.animation.file_size)
-				client.download_media(message.reply_to_message.animation.file_id, file_name=OutputDownload + nama)
+				await client.download_media(message.reply_to_message.animation.file_id, file_name=OutputDownload + nama)
 			elif message.reply_to_message.video:
 				nama = "video_{}-{}.mp4".format(message.reply_to_message.video.date, message.reply_to_message.video.file_size)
-				client.download_media(message.reply_to_message.video.file_id, file_name=OutputDownload + nama)
+				await client.download_media(message.reply_to_message.video.file_id, file_name=OutputDownload + nama)
 			elif message.reply_to_message.sticker:
 				nama = "sticker_{}_{}.webp".format(message.reply_to_message.sticker.date, message.reply_to_message.sticker.set_name)
-				client.download_media(message.reply_to_message.sticker.file_id, file_name=OutputDownload + nama)
+				await client.download_media(message.reply_to_message.sticker.file_id, file_name=OutputDownload + nama)
 			elif message.reply_to_message.audio:
 				nama = "{}".format(message.reply_to_message.audio.file_name)
-				client.download_media(message.reply_to_message.audio.file_id, file_name=OutputDownload + nama)
+				await client.download_media(message.reply_to_message.audio.file_id, file_name=OutputDownload + nama)
 			elif message.reply_to_message.voice:
 				nama = "audio_{}.ogg".format(message.reply_to_message.voice.file_id)
-				client.download_media(message.reply_to_message.voice.file_id, file_name=OutputDownload + nama)
+				await client.download_media(message.reply_to_message.voice.file_id, file_name=OutputDownload + nama)
 			elif message.reply_to_message.document:
 				nama = "{}".format(message.reply_to_message.document.file_name)
-				client.download_media(message.reply_to_message.document.file_id, file_name=OutputDownload + nama)
+				await client.download_media(message.reply_to_message.document.file_id, file_name=OutputDownload + nama)
 			else:
 				message.edit("Unknown file!")
 				return
@@ -156,10 +153,9 @@ def gdrive_stuff(client, message):
 			upload.SetContentFile(OutputDownload + nama)
 			upload.Upload()
 			upload.InsertPermission({'type': 'anyone', 'value': 'anyone', 'role': 'reader'})
-			message.edit("Done!\nDownload link: [{}]({})\nDirect download link: [{}]({})".format(nama, upload['alternateLink'], nama, upload['downloadUrl']))
+			await message.edit("Done!\nDownload link: [{}]({})\nDirect download link: [{}]({})".format(nama, upload['alternateLink'], nama, upload['downloadUrl']))
 			os.remove(OutputDownload + nama)
 		else:
-			message.edit("Reply document to mirror it to gdrive")
+			await message.edit("Reply document to mirror it to gdrive")
 	else:
-		message.edit("Usage:\n-> `gdrive download <url/gid>`\n-> `gdrive upload <file>`\n-> `gdrive mirror <url/gid>`\n\nFor more information about this, go to your assistant.")
-		return
+		await message.edit("Usage:\n-> `gdrive download <url/gid>`\n-> `gdrive upload <file>`\n-> `gdrive mirror <url/gid>`\n\nFor more information about this, go to your assistant.")
