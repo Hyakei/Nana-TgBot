@@ -85,8 +85,8 @@ async def Updater(client, message):
 		try:
 			upstream.pull(brname)
 			await message.edit('Successfully Updated!\nBot is restarting...')
-		except GitCommandError:
-			upstream.git.reset('--hard')
+		except exc.GitCommandError:
+			repo.git.reset('--hard')
 			await message.edit('Successfully Updated!\nBot is restarting...')
 		update_changelog(changelog)
 		restart_all()
