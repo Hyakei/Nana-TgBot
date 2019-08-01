@@ -74,7 +74,7 @@ async def except_hook(errtype, value, tback):
 
 
 async def start_bot():
-	sys.excepthook = except_hook
+	# sys.excepthook = except_hook
 	# Assistant bot
 	await setbot.start()
 	for setting in ALL_SETTINGS:
