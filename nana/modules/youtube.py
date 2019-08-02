@@ -131,15 +131,10 @@ async def youtube_music(client, message):
 		music.download(filepath="nana/downloads/{}".format(origtitle))
 		titletext = "**Converting music...**\n"
 		await message.edit(titletext+text, disable_web_page_preview=True)
-		try:
-			if avthumb:
-				subprocess.check_output(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -i "nana/cache/thumb.jpg" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata title="{musictitle}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
-			else:
-				subprocess.check_output(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -metadata title="{musictitle}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
-		except FileNotFoundError:
-			await message.edit("You need to install ffmpeg first!\nCheck your assistant for more information!")
-			await setbot.send_message(message.from_user.id, "Hello 🙂\nYou need to install ffmpeg to make audio works better, here is guide how to install it:\n\n**If you're using linux**, go to your terminal, type:\n`sudo apt install ffmpeg`\n\n**If you're using Windows**, download ffmpeg here:\n`https://ffmpeg.zeranoe.com/builds/`\nAnd then extract (if was archive), and place ffmpeg.exe to workdir (in current dir)\n\n**If you're using heroku**, type this in your workdir:\n`heroku buildpacks:add https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git`\nOr if you not using heroku term, follow this guide:\n1. Go to heroku.com\n2. Go to your app in heroku\n3. Change tabs/click Settings, then search for Buildpacks text\n4. Click button Add build pack, then type `https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest`\n5. Click Save changes, and you need to rebuild your heroku app to take changes!\n\nNeed help?\nGo @AyraSupport and ask there")
-			return
+		if avthumb:
+			os.system(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -i "nana/cache/thumb.jpg" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata title="{music.title}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
+		else:
+			os.system(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -metadata title="{music.title}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
 		try:
 			os.remove("nana/downloads/{}".format(origtitle))
 		except FileNotFoundError:
@@ -154,7 +149,7 @@ async def youtube_music(client, message):
 		titletext = "**Done! 🤗**\n"
 		await message.edit(titletext+text, disable_web_page_preview=True)
 	except Exception as err:
-		if str(err) == "[Errno 2] No such file or directory: 'ffmpeg': 'ffmpeg'":
+		if "command not found" in str(err) or "is not recognized" in str(err):
 			await message.edit("You need to install ffmpeg first!\nCheck your assistant for more information!")
 			await setbot.send_message(message.from_user.id, "Hello 🙂\nYou need to install ffmpeg to make audio works better, here is guide how to install it:\n\n**If you're using linux**, go to your terminal, type:\n`sudo apt install ffmpeg`\n\n**If you're using Windows**, download ffmpeg here:\n`https://ffmpeg.zeranoe.com/builds/`\nAnd then extract (if was archive), and place ffmpeg.exe to workdir (in current dir)\n\n**If you're using heroku**, type this in your workdir:\n`heroku buildpacks:add https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git`\nOr if you not using heroku term, follow this guide:\n1. Go to heroku.com\n2. Go to your app in heroku\n3. Change tabs/click Settings, then search for Buildpacks text\n4. Click button Add build pack, then type `https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest`\n5. Click Save changes, and you need to rebuild your heroku app to take changes!\n\nNeed help?\nGo @AyraSupport and ask there")
 			return
