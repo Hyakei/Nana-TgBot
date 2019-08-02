@@ -118,8 +118,17 @@ async def youtube_music(client, message):
 		musictitle = re.sub(r'[\\/*?:"<>|]',"", str(music.title))
 		titletext = "**Downloading music...**\n"
 		await message.edit(titletext+text, disable_web_page_preview=True)
-		r = requests.get("https://i.ytimg.com/vi/{}/0.jpg".format(video.videoid), stream=True)
-		avthumb = False
+		r = requests.get("https://i.ytimg.com/vi/{}/maxresdefault.jpg".format(video.videoid), stream=True)
+		if r.status_code != 200:
+			r = requests.get("https://i.ytimg.com/vi/{}/hqdefault.jpg".format(video.videoid), stream=True)
+			if r.status_code != 200:
+				r = requests.get("https://i.ytimg.com/vi/{}/sddefault.jpg".format(video.videoid), stream=True)
+				if r.status_code != 200:
+					r = requests.get("https://i.ytimg.com/vi/{}/mqdefault.jpg".format(video.videoid), stream=True)
+					if r.status_code != 200:
+						r = requests.get("https://i.ytimg.com/vi/{}/default.jpg".format(video.videoid), stream=True)
+						if r.status_code != 200:
+							avthumb = False
 		if r.status_code == 200:
 			avthumb = True
 			with open("nana/cache/thumb.jpg", "wb") as stk:
@@ -132,7 +141,7 @@ async def youtube_music(client, message):
 		titletext = "**Converting music...**\n"
 		await message.edit(titletext+text, disable_web_page_preview=True)
 		if avthumb:
-			os.system(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -i "nana/cache/thumb.jpg" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata title="{music.title}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
+			os.system(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -i "nana/cache/thumb.jpg" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (Front)" -metadata title="{music.title}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
 		else:
 			os.system(f'ffmpeg -loglevel panic -i "nana/downloads/{origtitle}" -metadata title="{music.title}" -metadata author="{video.author}" -metadata album_artist="{video.author}" -acodec libmp3lame -aq 4 -y "nana/downloads/{musictitle}.mp3"')
 		try:
@@ -141,7 +150,11 @@ async def youtube_music(client, message):
 			pass
 		titletext = "**Uploading...**\n"
 		await message.edit(titletext+text, disable_web_page_preview=True)
-		await app.send_audio(message.chat.id, audio="nana/downloads/{}.mp3".format(musictitle))
+		getprev = requests.get(video.thumb, stream=True)
+		with open("nana/cache/prev.jpg", "wb") as stk:
+			shutil.copyfileobj(getprev.raw, stk)
+		await app.send_audio(message.chat.id, audio="nana/downloads/{}.mp3".format(musictitle), thumb="nana/cache/prev.jpg", title=music.title)
+		os.remoev("nana/cache/prev.jpg")
 		try:
 			os.remove("nana/cache/thumb.jpg")
 		except FileNotFoundError:
