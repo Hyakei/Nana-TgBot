@@ -9,3 +9,5 @@ pyDownload
 pillow
 gtts
 gitpython
+pafy
+youtube_dl

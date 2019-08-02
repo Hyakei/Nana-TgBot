@@ -17,16 +17,17 @@ from sqlalchemy import func, distinct, Column, String, UnicodeText, Integer
 
 # logging
 logging.basicConfig(level=logging.INFO)
+log = logging.getLogger()
 
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-    LOGGER.error("You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting.")
+    log.error("You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting.")
     quit(1)
 
 try:
 	from nana.config import Development as Config
 except ModuleNotFoundError:
-	LOGGER.error("You need to place config.py in nana dir!")
+	log.error("You need to place config.py in nana dir!")
 	quit(1)
 
 USERBOT_VERSION = "0.2"
@@ -52,7 +53,6 @@ Command = Config.Command
 OutputDownload = Config.OutputDownload
 if OutputDownload[-1] != "/":
 	OutputDownload = OutputDownload + "/"
-log = logging.getLogger()
 
 # APIs
 thumbnail_API = Config.thumbnail_API
