@@ -102,7 +102,6 @@ async def youtube_music(client, message):
 		await message.edit("Send URL here!")
 		return
 	teks = args[1]
-	balasan = "\n\nChecking..."
 	try:
 		video = pafy.new(teks)
 	except ValueError:
